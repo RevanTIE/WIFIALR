@@ -36,7 +36,7 @@ save_path = file_path[0: file_position+1] #extracts the saving path.
 #Se añaden los encabezados
 csv_headers = "csi_headers.csv"
 csv_cols = pd.read_csv(csv_headers)
-csv_col_list = csv_cols["column_Names"].tolist()
+csv_col_list = csv_cols["Column_Names"].tolist()
 
 trn = pd.read_csv(file_path, names=csv_col_list)
 trn_len = len(trn)
