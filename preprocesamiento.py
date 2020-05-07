@@ -55,8 +55,11 @@ inf_estadistica_trn = trn.describe() #Por lo tanto existen datos faltantes.
 #2. Debido a la recolección de los datos
 
 #Se pone nan como 0
-trn_NaN_2_0 = trn.fillna(0)
+trn_NaN_2_0 = trn.fillna(1.0000e-5)
 
 #Se normalizan los datos
 trn_normalizado= normalizar(trn_NaN_2_0)
+trn_normalizado["timestamp"] = tim_normalizado
+
+#Eliminación de ruido
 
