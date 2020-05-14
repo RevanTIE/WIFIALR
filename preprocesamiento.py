@@ -63,3 +63,5 @@ trn_normalizado["timestamp"] = tim_normalizado
 
 #Eliminación de ruido
 
+#Saber interpretar el nombre en automático
+trn_normalizado.to_csv(r'trn\input_' + 'walk.csv', index = False, header=True)
