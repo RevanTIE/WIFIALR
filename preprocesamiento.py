@@ -26,6 +26,9 @@ def normalizar(df):
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
 file_path = askopenfilename() #Se abre el explorador de archivos y se guarda la selección
+splitted = file_path.split("/")
+folder_name = splitted[-2]
+file_name = splitted[-1]
 
 #Para guardar el directorio donde se encontraba el archivo seleccionado
 match = re.search(r'/.*\..+', file_path) #matches name of file
@@ -64,4 +67,4 @@ trn_normalizado["timestamp"] = tim_normalizado
 #Eliminación de ruido
 
 #Saber interpretar el nombre en automático
-trn_normalizado.to_csv(r'trn\input_' + 'walk.csv', index = False, header=True)
+trn_normalizado.to_csv(r''+ folder_name +'\input_' + file_name, index = False, header=True)
