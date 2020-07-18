@@ -22,6 +22,40 @@ def normalizar(df):
         result[dato] = (df[dato] - min_value) / (max_value - min_value)
     return result
 
+##Función de eliminación de ruido (Por vector)
+def ruido(i):
+    mirror_i = np.transpose(i)
+    w = 3
+    ven = w
+    
+    prev = mirror_i[0:ven-1]
+    prev_mean = np.mean(prev)
+    
+    modified_length = len(mirror_i)-2
+    z_table = []
+    
+    ##Para length del primer valor hasta el final del vector
+    for data in range(modified_length):
+        y = mirror_i
+        if ven <= len(mirror_i):
+            z = y[data:ven]
+            ven = ven +1
+        
+        acumulado = np.mean(z)
+        z_table.append(acumulado)
+    
+    penultimo = mirror_i[-2]
+    ultimo = mirror_i[-1]
+    last = [penultimo, ultimo]
+    last_mean = np.mean(last)
+    
+    z_table.insert(0, prev_mean)
+    z_table.append(last_mean)
+    
+    return z_table
+    
+    
+
 #Se abre una ventana de dialogo para solicitar el archivo csv
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
@@ -60,11 +94,23 @@ inf_estadistica_trn = trn.describe() #Por lo tanto existen datos faltantes.
 #Se pone nan como 0
 trn_NaN_2_0 = trn.fillna(1.0000e-5)
 
-#Se normalizan los datos
-trn_normalizado= normalizar(trn_NaN_2_0)
-trn_normalizado["timestamp"] = tim_normalizado
-
 #Eliminación de ruido
+trn_matrix = trn_NaN_2_0.values
+rows_matrix = len(trn_matrix)
+cols_matrix = len(np.transpose(trn_matrix))
+
+trn_sin_ruido = trn_matrix[:, 0:cols_matrix] #Sin el timestamp, 180 variables
+trn_sin_ruido_collected = trn_sin_ruido * 0
+
+for dat in range(cols_matrix):
+    trn_sin_ruido_collected[:, dat] = ruido(trn_sin_ruido[:, dat])
+
+sin_ruido_df = pd.DataFrame(trn_sin_ruido_collected, columns=csv_col_list)
+
+#Se normalizan los datos
+trn_normalizado= normalizar(sin_ruido_df)
+trn_normalizado['timestamp'] = tim_normalizado['timestamp']
+
 
 #Saber interpretar el nombre en automático
 trn_normalizado.to_csv(r''+ folder_name +'\input_' + file_name, index = False, header=True)
