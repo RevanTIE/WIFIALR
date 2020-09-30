@@ -1,0 +1,13 @@
+%%%%%%%%%%%%%%%%%%%%%%%%% LIBRERÍAS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Estos scripts pertenecen a Daniel Dalpheri, a excepción de:
+
+- Activity_datfile_to_csvfile.m
+- phase_calibration.m
+- read_bf_file.m
+
+que pertenecen a Hirokazu Narui.
+
+De los cuales se realizaron modificaciones a Activity_datfile_to_csvfile.m 
+por parte de Emmanuel López Hernández
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

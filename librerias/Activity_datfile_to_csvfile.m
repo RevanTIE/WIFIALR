@@ -36,4 +36,4 @@ end
 
 temp(temp==-Inf) = NaN;  %-Inf values replaced by NaN. By: Emmanuel L
 FileName_new = erase(FileName,".dat"); %.dat string removed from filename. By: Emmanuel L
-csvwrite([char(FileName_new),'.csv'],horzcat(timestamp,temp));
+csvwrite([char(PathName),char(FileName_new),'.csv'],horzcat(timestamp,temp));
