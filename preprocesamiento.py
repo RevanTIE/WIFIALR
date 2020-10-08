@@ -2,6 +2,9 @@
 """
 Created on Sun May  3 15:40:41 2020
 
+Script para preprocesar los datos crudos, se aplican las operaciones de:
+    Imputación de Datos, Eliminación de Ruido, y Normalización.
+
 @author: elohe
 """
 
@@ -107,7 +110,16 @@ for dat in range(cols_matrix):
 
 sin_ruido_df = pd.DataFrame(trn_sin_ruido_collected, columns=csv_col_list)
 
-#Se normalizan los datos
+"""
+
+Se deben almacenar datos mínimos y máximos de cada subcarrier, de los datos originales 
+en la tabla de MIN_MAX de la base de datos, por cada movimiento.
+
+"""
+
+#Se normalizan los datos usados para pruebas. 
+#Los datos nuevos se normalizarán con la tabla MIN_MAX
+
 trn_normalizado= normalizar(sin_ruido_df)
 trn_normalizado['timestamp'] = tim_normalizado['timestamp']
 
