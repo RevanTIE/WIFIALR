@@ -14,33 +14,34 @@ import pandas as pd
 import numpy as np
 import os
 import glob
-
+from ClasesNumericas import ClasesNum
+"""
 def clases_numericas(val_str_clase):
     val_int_clase = 0
     
     if (val_str_clase == 'BE'):
-        val_int_clase = 0
+        val_int_clase = 1
         
     if (val_str_clase == 'FA'):
-        val_int_clase = 1
-    
-    if (val_str_clase == 'PI'):
         val_int_clase = 2
     
-    if (val_str_clase == 'RU'):
+    if (val_str_clase == 'PI'):
         val_int_clase = 3
     
-    if (val_str_clase == 'SD'):
+    if (val_str_clase == 'RU'):
         val_int_clase = 4
     
-    if (val_str_clase == 'SU'):
+    if (val_str_clase == 'SD'):
         val_int_clase = 5
     
-    if (val_str_clase == 'WA'):
+    if (val_str_clase == 'SU'):
         val_int_clase = 6
     
+    if (val_str_clase == 'WA'):
+        val_int_clase = 7
+    
     return val_int_clase
-
+"""
 ruta = 'pca'
 os.chdir(ruta)
 pca_list = glob.glob('*.{}'.format('csv'))
@@ -58,7 +59,9 @@ for mov in range(len(pca_list)):
     pca_matriz_tr = np.transpose(pca_matrix)
     
     Y.append(pca_list[mov].split("_")[-4])
-    val_int_clase = clases_numericas(Y[mov])
+    tipo_movimiento = ClasesNum(Y[mov])
+    val_int_clase = tipo_movimiento.val_int_clase
+    #val_int_clase = clases_numericas(Y[mov])
     
     X[inc_cols_start:inc_cols_end, 0] = val_int_clase
     
@@ -68,6 +71,7 @@ for mov in range(len(pca_list)):
     
     inc_cols_start = inc_cols_start + 6
     inc_cols_end = inc_cols_end + 6
+
 
 df_X = pd.DataFrame(X[:, 1:-1])
 df_Y = pd.DataFrame(X[:, 0])
