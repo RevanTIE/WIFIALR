@@ -8,6 +8,9 @@ Script que toma 6 columnas de cada matriz de PCA, de cada movimiento,
 y construye una nueva matriz, que será dividida en training, testing y
 validation.
 
+Si se opta por la segunda metodología, crear copia de este script para generar 
+X y Y basados en los datos sin PCA (datos preprocesados).
+
 """
 
 import pandas as pd
@@ -15,33 +18,7 @@ import numpy as np
 import os
 import glob
 from ClasesNumericas import ClasesNum
-"""
-def clases_numericas(val_str_clase):
-    val_int_clase = 0
-    
-    if (val_str_clase == 'BE'):
-        val_int_clase = 1
-        
-    if (val_str_clase == 'FA'):
-        val_int_clase = 2
-    
-    if (val_str_clase == 'PI'):
-        val_int_clase = 3
-    
-    if (val_str_clase == 'RU'):
-        val_int_clase = 4
-    
-    if (val_str_clase == 'SD'):
-        val_int_clase = 5
-    
-    if (val_str_clase == 'SU'):
-        val_int_clase = 6
-    
-    if (val_str_clase == 'WA'):
-        val_int_clase = 7
-    
-    return val_int_clase
-"""
+
 ruta = 'pca'
 os.chdir(ruta)
 pca_list = glob.glob('*.{}'.format('csv'))
@@ -52,7 +29,10 @@ inc_cols_start = 0
 inc_cols_end = 6
 
 
-
+"""
+Poner condición, si se considera la totalidad de los datos de todos los 
+movimientos para fines de training-test; o un dataset nuevo para validación.
+"""
 for mov in range(len(pca_list)):
     matrix = pd.read_csv(pca_list[mov])
     pca_matrix = matrix.iloc[0:19968, 0:6]

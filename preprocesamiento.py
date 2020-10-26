@@ -60,7 +60,7 @@ def ruido(i):
     
     return z_table
     
-    
+
 
 #Se abre una ventana de dialogo para solicitar el archivo csv
 root = Tk() #Elimina la ventana de Tkinter
@@ -75,6 +75,10 @@ match = re.search(r'/.*\..+', file_path) #matches name of file
 file_position = file_path.find(match.group()) #defines position of filename in file path
 
 save_path = file_path[0: file_position+1] #extracts the saving path.
+
+"""
+Preguntar si se desea almacenar únicamente la información de la Amplitud.
+"""
 
 #Se añaden los encabezados
 csv_headers = "csi_headers.csv"
@@ -123,91 +127,96 @@ for col in range(len(np.transpose(minimos))):
     maximos[:, col] = trn_nruido_ntime[:, col].max()
 
 """
+Preguntar si se desea almacenar datos min y max en la base de datos
 
 Se deben almacenar datos mínimos y máximos de cada subcarrier, de los datos originales 
 en la tabla de MIN_MAX de la base de datos, por cada movimiento.
 
-
 """
-### Mínimos
-minimos_str = []
-mov_identifier = file_name.split("_")[-4]
-tipo_movimiento = ClasesNum(mov_identifier)
-clase = tipo_movimiento.val_int_clase
-id_min = 0
 
-for col in range(len(np.transpose(minimos))):
-     minimos_str.append(str(minimos[0, col]))
-     
-minimos_str.append("MINIMO")
-minimos_str.append(str(tiempo))
-minimos_str.append(str(clase))
+min_max_response = input("¿Desea almacenar valores mínimos y máximos en la base de datos? S = SI, N = NO: ")
 
-database = DataBase()
-sql_minimos = "INSERT INTO min_max(ANTENA_1_AMP_SUB1, ANTENA_1_AMP_SUB2, ANTENA_1_AMP_SUB3, ANTENA_1_AMP_SUB4, ANTENA_1_AMP_SUB5, ANTENA_1_AMP_SUB6, ANTENA_1_AMP_SUB7, ANTENA_1_AMP_SUB8, ANTENA_1_AMP_SUB9, ANTENA_1_AMP_SUB10, \
-ANTENA_1_AMP_SUB11, ANTENA_1_AMP_SUB12, ANTENA_1_AMP_SUB13, ANTENA_1_AMP_SUB14, ANTENA_1_AMP_SUB15, ANTENA_1_AMP_SUB16, ANTENA_1_AMP_SUB17, ANTENA_1_AMP_SUB18, ANTENA_1_AMP_SUB19, ANTENA_1_AMP_SUB20, \
-ANTENA_1_AMP_SUB21, ANTENA_1_AMP_SUB22, ANTENA_1_AMP_SUB23, ANTENA_1_AMP_SUB24, ANTENA_1_AMP_SUB25, ANTENA_1_AMP_SUB26, ANTENA_1_AMP_SUB27, ANTENA_1_AMP_SUB28, ANTENA_1_AMP_SUB29, ANTENA_1_AMP_SUB30, \
-ANTENA_2_AMP_SUB1, ANTENA_2_AMP_SUB2, ANTENA_2_AMP_SUB3, ANTENA_2_AMP_SUB4, ANTENA_2_AMP_SUB5, ANTENA_2_AMP_SUB6, ANTENA_2_AMP_SUB7, ANTENA_2_AMP_SUB8, ANTENA_2_AMP_SUB9, ANTENA_2_AMP_SUB10, \
-ANTENA_2_AMP_SUB11, ANTENA_2_AMP_SUB12, ANTENA_2_AMP_SUB13, ANTENA_2_AMP_SUB14, ANTENA_2_AMP_SUB15, ANTENA_2_AMP_SUB16, ANTENA_2_AMP_SUB17, ANTENA_2_AMP_SUB18, ANTENA_2_AMP_SUB19, ANTENA_2_AMP_SUB20, \
-ANTENA_2_AMP_SUB21, ANTENA_2_AMP_SUB22, ANTENA_2_AMP_SUB23, ANTENA_2_AMP_SUB24, ANTENA_2_AMP_SUB25, ANTENA_2_AMP_SUB26, ANTENA_2_AMP_SUB27, ANTENA_2_AMP_SUB28, ANTENA_2_AMP_SUB29, ANTENA_2_AMP_SUB30, \
-ANTENA_3_AMP_SUB1, ANTENA_3_AMP_SUB2, ANTENA_3_AMP_SUB3, ANTENA_3_AMP_SUB4, ANTENA_3_AMP_SUB5, ANTENA_3_AMP_SUB6, ANTENA_3_AMP_SUB7, ANTENA_3_AMP_SUB8, ANTENA_3_AMP_SUB9, ANTENA_3_AMP_SUB10, \
-ANTENA_3_AMP_SUB11, ANTENA_3_AMP_SUB12, ANTENA_3_AMP_SUB13, ANTENA_3_AMP_SUB14, ANTENA_3_AMP_SUB15, ANTENA_3_AMP_SUB16, ANTENA_3_AMP_SUB17, ANTENA_3_AMP_SUB18, ANTENA_3_AMP_SUB19, ANTENA_3_AMP_SUB20, \
-ANTENA_3_AMP_SUB21, ANTENA_3_AMP_SUB22, ANTENA_3_AMP_SUB23, ANTENA_3_AMP_SUB24, ANTENA_3_AMP_SUB25, ANTENA_3_AMP_SUB26, ANTENA_3_AMP_SUB27, ANTENA_3_AMP_SUB28, ANTENA_3_AMP_SUB29, ANTENA_3_AMP_SUB30, VALOR, DATE_CREATED, FK_MOVIMIENTO)  \
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
-%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
-%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
+if (min_max_response == "S"):
+    ### Mínimos
+    minimos_str = []
+    mov_identifier = file_name.split("_")[-4]
+    tipo_movimiento = ClasesNum(mov_identifier)
+    clase = tipo_movimiento.val_int_clase
+    id_min = 0
+    
+    for col in range(len(np.transpose(minimos))):
+         minimos_str.append(str(minimos[0, col]))
+         
+    minimos_str.append("MINIMO")
+    minimos_str.append(str(tiempo))
+    minimos_str.append(str(clase))
+    
+    database = DataBase()
+    sql_minimos = "INSERT INTO min_max(ANTENA_1_AMP_SUB1, ANTENA_1_AMP_SUB2, ANTENA_1_AMP_SUB3, ANTENA_1_AMP_SUB4, ANTENA_1_AMP_SUB5, ANTENA_1_AMP_SUB6, ANTENA_1_AMP_SUB7, ANTENA_1_AMP_SUB8, ANTENA_1_AMP_SUB9, ANTENA_1_AMP_SUB10, \
+    ANTENA_1_AMP_SUB11, ANTENA_1_AMP_SUB12, ANTENA_1_AMP_SUB13, ANTENA_1_AMP_SUB14, ANTENA_1_AMP_SUB15, ANTENA_1_AMP_SUB16, ANTENA_1_AMP_SUB17, ANTENA_1_AMP_SUB18, ANTENA_1_AMP_SUB19, ANTENA_1_AMP_SUB20, \
+    ANTENA_1_AMP_SUB21, ANTENA_1_AMP_SUB22, ANTENA_1_AMP_SUB23, ANTENA_1_AMP_SUB24, ANTENA_1_AMP_SUB25, ANTENA_1_AMP_SUB26, ANTENA_1_AMP_SUB27, ANTENA_1_AMP_SUB28, ANTENA_1_AMP_SUB29, ANTENA_1_AMP_SUB30, \
+    ANTENA_2_AMP_SUB1, ANTENA_2_AMP_SUB2, ANTENA_2_AMP_SUB3, ANTENA_2_AMP_SUB4, ANTENA_2_AMP_SUB5, ANTENA_2_AMP_SUB6, ANTENA_2_AMP_SUB7, ANTENA_2_AMP_SUB8, ANTENA_2_AMP_SUB9, ANTENA_2_AMP_SUB10, \
+    ANTENA_2_AMP_SUB11, ANTENA_2_AMP_SUB12, ANTENA_2_AMP_SUB13, ANTENA_2_AMP_SUB14, ANTENA_2_AMP_SUB15, ANTENA_2_AMP_SUB16, ANTENA_2_AMP_SUB17, ANTENA_2_AMP_SUB18, ANTENA_2_AMP_SUB19, ANTENA_2_AMP_SUB20, \
+    ANTENA_2_AMP_SUB21, ANTENA_2_AMP_SUB22, ANTENA_2_AMP_SUB23, ANTENA_2_AMP_SUB24, ANTENA_2_AMP_SUB25, ANTENA_2_AMP_SUB26, ANTENA_2_AMP_SUB27, ANTENA_2_AMP_SUB28, ANTENA_2_AMP_SUB29, ANTENA_2_AMP_SUB30, \
+    ANTENA_3_AMP_SUB1, ANTENA_3_AMP_SUB2, ANTENA_3_AMP_SUB3, ANTENA_3_AMP_SUB4, ANTENA_3_AMP_SUB5, ANTENA_3_AMP_SUB6, ANTENA_3_AMP_SUB7, ANTENA_3_AMP_SUB8, ANTENA_3_AMP_SUB9, ANTENA_3_AMP_SUB10, \
+    ANTENA_3_AMP_SUB11, ANTENA_3_AMP_SUB12, ANTENA_3_AMP_SUB13, ANTENA_3_AMP_SUB14, ANTENA_3_AMP_SUB15, ANTENA_3_AMP_SUB16, ANTENA_3_AMP_SUB17, ANTENA_3_AMP_SUB18, ANTENA_3_AMP_SUB19, ANTENA_3_AMP_SUB20, \
+    ANTENA_3_AMP_SUB21, ANTENA_3_AMP_SUB22, ANTENA_3_AMP_SUB23, ANTENA_3_AMP_SUB24, ANTENA_3_AMP_SUB25, ANTENA_3_AMP_SUB26, ANTENA_3_AMP_SUB27, ANTENA_3_AMP_SUB28, ANTENA_3_AMP_SUB29, ANTENA_3_AMP_SUB30, VALOR, DATE_CREATED, FK_MOVIMIENTO)  \
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    
+            
+    try:
+       database.cursor.execute(sql_minimos, minimos_str)
+       id_min = database.connection.insert_id()
+       database.connection.commit()
+       #database.close()
         
-try:
-   database.cursor.execute(sql_minimos, minimos_str)
-   id_min = database.connection.insert_id()
-   database.connection.commit()
-   #database.close()
+    except Exception as e:
+        raise
+        
+    ##Máximos
+    maximos_str = []
     
-except Exception as e:
-    raise
+    for col in range(len(np.transpose(maximos))):
+         maximos_str.append(str(maximos[0, col]))
+         
+    maximos_str.append("MAXIMO")
+    maximos_str.append(str(tiempo))
+    maximos_str.append(str(clase))
+    maximos_str.append(str(id_min))
     
-##Máximos
-maximos_str = []
-
-for col in range(len(np.transpose(maximos))):
-     maximos_str.append(str(maximos[0, col]))
-     
-maximos_str.append("MAXIMO")
-maximos_str.append(str(tiempo))
-maximos_str.append(str(clase))
-maximos_str.append(str(id_min))
-
-database = DataBase()
-sql_maximos = "INSERT INTO min_max(ANTENA_1_AMP_SUB1, ANTENA_1_AMP_SUB2, ANTENA_1_AMP_SUB3, ANTENA_1_AMP_SUB4, ANTENA_1_AMP_SUB5, ANTENA_1_AMP_SUB6, ANTENA_1_AMP_SUB7, ANTENA_1_AMP_SUB8, ANTENA_1_AMP_SUB9, ANTENA_1_AMP_SUB10, \
-ANTENA_1_AMP_SUB11, ANTENA_1_AMP_SUB12, ANTENA_1_AMP_SUB13, ANTENA_1_AMP_SUB14, ANTENA_1_AMP_SUB15, ANTENA_1_AMP_SUB16, ANTENA_1_AMP_SUB17, ANTENA_1_AMP_SUB18, ANTENA_1_AMP_SUB19, ANTENA_1_AMP_SUB20, \
-ANTENA_1_AMP_SUB21, ANTENA_1_AMP_SUB22, ANTENA_1_AMP_SUB23, ANTENA_1_AMP_SUB24, ANTENA_1_AMP_SUB25, ANTENA_1_AMP_SUB26, ANTENA_1_AMP_SUB27, ANTENA_1_AMP_SUB28, ANTENA_1_AMP_SUB29, ANTENA_1_AMP_SUB30, \
-ANTENA_2_AMP_SUB1, ANTENA_2_AMP_SUB2, ANTENA_2_AMP_SUB3, ANTENA_2_AMP_SUB4, ANTENA_2_AMP_SUB5, ANTENA_2_AMP_SUB6, ANTENA_2_AMP_SUB7, ANTENA_2_AMP_SUB8, ANTENA_2_AMP_SUB9, ANTENA_2_AMP_SUB10, \
-ANTENA_2_AMP_SUB11, ANTENA_2_AMP_SUB12, ANTENA_2_AMP_SUB13, ANTENA_2_AMP_SUB14, ANTENA_2_AMP_SUB15, ANTENA_2_AMP_SUB16, ANTENA_2_AMP_SUB17, ANTENA_2_AMP_SUB18, ANTENA_2_AMP_SUB19, ANTENA_2_AMP_SUB20, \
-ANTENA_2_AMP_SUB21, ANTENA_2_AMP_SUB22, ANTENA_2_AMP_SUB23, ANTENA_2_AMP_SUB24, ANTENA_2_AMP_SUB25, ANTENA_2_AMP_SUB26, ANTENA_2_AMP_SUB27, ANTENA_2_AMP_SUB28, ANTENA_2_AMP_SUB29, ANTENA_2_AMP_SUB30, \
-ANTENA_3_AMP_SUB1, ANTENA_3_AMP_SUB2, ANTENA_3_AMP_SUB3, ANTENA_3_AMP_SUB4, ANTENA_3_AMP_SUB5, ANTENA_3_AMP_SUB6, ANTENA_3_AMP_SUB7, ANTENA_3_AMP_SUB8, ANTENA_3_AMP_SUB9, ANTENA_3_AMP_SUB10, \
-ANTENA_3_AMP_SUB11, ANTENA_3_AMP_SUB12, ANTENA_3_AMP_SUB13, ANTENA_3_AMP_SUB14, ANTENA_3_AMP_SUB15, ANTENA_3_AMP_SUB16, ANTENA_3_AMP_SUB17, ANTENA_3_AMP_SUB18, ANTENA_3_AMP_SUB19, ANTENA_3_AMP_SUB20, \
-ANTENA_3_AMP_SUB21, ANTENA_3_AMP_SUB22, ANTENA_3_AMP_SUB23, ANTENA_3_AMP_SUB24, ANTENA_3_AMP_SUB25, ANTENA_3_AMP_SUB26, ANTENA_3_AMP_SUB27, ANTENA_3_AMP_SUB28, ANTENA_3_AMP_SUB29, ANTENA_3_AMP_SUB30, VALOR, DATE_CREATED, FK_MOVIMIENTO, ASOCIADO)  \
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
-%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
-%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-
-
-
-try:
-   database.cursor.execute(sql_maximos, maximos_str)
-   database.connection.commit()
-   database.close()
+    database = DataBase()
+    sql_maximos = "INSERT INTO min_max(ANTENA_1_AMP_SUB1, ANTENA_1_AMP_SUB2, ANTENA_1_AMP_SUB3, ANTENA_1_AMP_SUB4, ANTENA_1_AMP_SUB5, ANTENA_1_AMP_SUB6, ANTENA_1_AMP_SUB7, ANTENA_1_AMP_SUB8, ANTENA_1_AMP_SUB9, ANTENA_1_AMP_SUB10, \
+    ANTENA_1_AMP_SUB11, ANTENA_1_AMP_SUB12, ANTENA_1_AMP_SUB13, ANTENA_1_AMP_SUB14, ANTENA_1_AMP_SUB15, ANTENA_1_AMP_SUB16, ANTENA_1_AMP_SUB17, ANTENA_1_AMP_SUB18, ANTENA_1_AMP_SUB19, ANTENA_1_AMP_SUB20, \
+    ANTENA_1_AMP_SUB21, ANTENA_1_AMP_SUB22, ANTENA_1_AMP_SUB23, ANTENA_1_AMP_SUB24, ANTENA_1_AMP_SUB25, ANTENA_1_AMP_SUB26, ANTENA_1_AMP_SUB27, ANTENA_1_AMP_SUB28, ANTENA_1_AMP_SUB29, ANTENA_1_AMP_SUB30, \
+    ANTENA_2_AMP_SUB1, ANTENA_2_AMP_SUB2, ANTENA_2_AMP_SUB3, ANTENA_2_AMP_SUB4, ANTENA_2_AMP_SUB5, ANTENA_2_AMP_SUB6, ANTENA_2_AMP_SUB7, ANTENA_2_AMP_SUB8, ANTENA_2_AMP_SUB9, ANTENA_2_AMP_SUB10, \
+    ANTENA_2_AMP_SUB11, ANTENA_2_AMP_SUB12, ANTENA_2_AMP_SUB13, ANTENA_2_AMP_SUB14, ANTENA_2_AMP_SUB15, ANTENA_2_AMP_SUB16, ANTENA_2_AMP_SUB17, ANTENA_2_AMP_SUB18, ANTENA_2_AMP_SUB19, ANTENA_2_AMP_SUB20, \
+    ANTENA_2_AMP_SUB21, ANTENA_2_AMP_SUB22, ANTENA_2_AMP_SUB23, ANTENA_2_AMP_SUB24, ANTENA_2_AMP_SUB25, ANTENA_2_AMP_SUB26, ANTENA_2_AMP_SUB27, ANTENA_2_AMP_SUB28, ANTENA_2_AMP_SUB29, ANTENA_2_AMP_SUB30, \
+    ANTENA_3_AMP_SUB1, ANTENA_3_AMP_SUB2, ANTENA_3_AMP_SUB3, ANTENA_3_AMP_SUB4, ANTENA_3_AMP_SUB5, ANTENA_3_AMP_SUB6, ANTENA_3_AMP_SUB7, ANTENA_3_AMP_SUB8, ANTENA_3_AMP_SUB9, ANTENA_3_AMP_SUB10, \
+    ANTENA_3_AMP_SUB11, ANTENA_3_AMP_SUB12, ANTENA_3_AMP_SUB13, ANTENA_3_AMP_SUB14, ANTENA_3_AMP_SUB15, ANTENA_3_AMP_SUB16, ANTENA_3_AMP_SUB17, ANTENA_3_AMP_SUB18, ANTENA_3_AMP_SUB19, ANTENA_3_AMP_SUB20, \
+    ANTENA_3_AMP_SUB21, ANTENA_3_AMP_SUB22, ANTENA_3_AMP_SUB23, ANTENA_3_AMP_SUB24, ANTENA_3_AMP_SUB25, ANTENA_3_AMP_SUB26, ANTENA_3_AMP_SUB27, ANTENA_3_AMP_SUB28, ANTENA_3_AMP_SUB29, ANTENA_3_AMP_SUB30, VALOR, DATE_CREATED, FK_MOVIMIENTO, ASOCIADO)  \
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     
-except Exception as e:
-    raise
+    
+    
+    try:
+       database.cursor.execute(sql_maximos, maximos_str)
+       database.connection.commit()
+       database.close()
+        
+    except Exception as e:
+        raise
 
 #Se normalizan los datos usados para pruebas. 
 #Los datos nuevos se normalizarán con la tabla MIN_MAX
 
-##trn_normalizado= normalizar(sin_ruido_df)
-##trn_normalizado['timestamp'] = tim_normalizado['timestamp']
+trn_normalizado= normalizar(sin_ruido_df)
+trn_normalizado['timestamp'] = tim_normalizado['timestamp']
 
 
 #Saber interpretar el nombre en automático
-##trn_normalizado.to_csv(r''+ 'preprocesados' +'\input_' + file_name, index = False, header=True)
+trn_normalizado.to_csv(r''+ 'preprocesados' +'\input_' + file_name, index = False, header=True)
