@@ -23,10 +23,12 @@ ruta = 'pca'
 os.chdir(ruta)
 pca_list = glob.glob('*.{}'.format('csv'))
 
-X = np.zeros((42, 19969))
-Y = []
-inc_cols_start = 0
-inc_cols_end = 6
+
+X = np.zeros((139776, 7))
+Y = np.zeros((19968, 1)) #Clases
+
+inc_rows_start = 0
+inc_rows_end = 19968
 
 
 """
@@ -36,29 +38,24 @@ movimientos para fines de training-test; o un dataset nuevo para validación.
 for mov in range(len(pca_list)):
     matrix = pd.read_csv(pca_list[mov])
     pca_matrix = matrix.iloc[0:19968, 0:6]
-    pca_matriz_tr = np.transpose(pca_matrix)
     
-    Y.append(pca_list[mov].split("_")[-4])
-    tipo_movimiento = ClasesNum(Y[mov])
-    val_int_clase = tipo_movimiento.val_int_clase
-    #val_int_clase = clases_numericas(Y[mov])
+    movimiento = pca_list[mov].split("_")[-4]
+    tipo_movimiento = ClasesNum(movimiento).val_int_clase
     
-    X[inc_cols_start:inc_cols_end, 0] = val_int_clase
+    Y[Y==mov] = tipo_movimiento
     
-    X[inc_cols_start:inc_cols_end, 1:19969] = pca_matriz_tr
+    X[inc_rows_start:inc_rows_end, 0] = Y[:, 0]
+    X[inc_rows_start:inc_rows_end, 1:7] = pca_matrix
     
     #8 if (inc_cols_start == 0) else 7
-    
-    inc_cols_start = inc_cols_start + 6
-    inc_cols_end = inc_cols_end + 6
+    inc_rows_start = inc_rows_start + 19968
+    inc_rows_end = inc_rows_end + 19968
 
 
-df_X = pd.DataFrame(X[:, 1:-1])
+df_X = pd.DataFrame(X[:, 1:len(X.transpose())])
 df_Y = pd.DataFrame(X[:, 0])
 
 os.chdir('../trn_tst')
-df_X_trans = np.transpose(df_X)
-df_Y_trans = np.transpose(df_Y)
 
-df_X_trans.to_csv(r''+ 'X.csv', index = False, header=False)
-df_Y_trans.to_csv(r''+ 'Y.csv', index = False, header=False)
+df_X.to_csv(r''+ 'X.csv', index = False, header=False)
+df_Y.to_csv(r''+ 'Y.csv', index = False, header=False)
