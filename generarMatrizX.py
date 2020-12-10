@@ -24,32 +24,51 @@ os.chdir(ruta)
 pca_list = glob.glob('*.{}'.format('csv'))
 
 
-X = np.zeros((139776, 7))
-Y = np.zeros((19968, 1)) #Clases
+#X = np.zeros((139776, 7))
+#Y = np.zeros((19968, 1)) #Clases
+X_list = []
+#x_rows = 0
+
+for mov in range(len(pca_list)):
+    X_matrix = pd.read_csv(pca_list[mov])
+    X_list.append(len(X_matrix))
+
+suma_x_list = sum(X_list)
+X = np.zeros((suma_x_list, 7))
+#Y = []
+#count_rows = 0
 
 inc_rows_start = 0
-inc_rows_end = 19968
+inc_rows_end = 0
 
 
 """
 Poner condición, si se considera la totalidad de los datos de todos los 
 movimientos para fines de training-test; o un dataset nuevo para validación.
 """
+
 for mov in range(len(pca_list)):
     matrix = pd.read_csv(pca_list[mov])
-    pca_matrix = matrix.iloc[0:19968, 0:6]
+    count_rows = len(matrix)
+    
+    if (mov == 0): 
+        inc_rows_end = X_list[mov]
+        
+    Y = np.zeros((count_rows, 1))
+    pca_matrix = matrix.iloc[:, 0:6]
     
     movimiento = pca_list[mov].split("_")[-4]
     tipo_movimiento = ClasesNum(movimiento).val_int_clase
     
-    Y[Y==mov] = tipo_movimiento
+    Y[Y==0] = tipo_movimiento
     
     X[inc_rows_start:inc_rows_end, 0] = Y[:, 0]
     X[inc_rows_start:inc_rows_end, 1:7] = pca_matrix
     
     #8 if (inc_cols_start == 0) else 7
-    inc_rows_start = inc_rows_start + 19968
-    inc_rows_end = inc_rows_end + 19968
+    if(mov != len(pca_list) - 1):
+        inc_rows_start = inc_rows_end
+        inc_rows_end += X_list[mov+1]
 
 
 df_X = pd.DataFrame(X[:, 1:len(X.transpose())])

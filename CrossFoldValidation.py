@@ -25,7 +25,9 @@ from sklearn import svm
 contador = [1, 2, 3, 4, 5, 6]
 
 X = pd.read_csv("trn_tst/X.csv", names=contador)
-Y = pd.read_csv("trn_tst/Y.csv", names=[0])
+Y_vector = pd.read_csv("trn_tst/Y.csv", names=[0])
+
+Y = np.ravel(Y_vector)
 
 """
 X_iris, Y_iris = datasets.load_iris(return_X_y=True)
@@ -43,8 +45,9 @@ scores = clf.score(X_test, y_test)
 # Sustituir por un shuffle diferente, que no divida en training/test, y hacer pruebas de ambos
 cv_suffled = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0) 
 clf = svm.SVC(kernel='linear', C=1)
+#clf.fit(X,Y)
 
 #Aplicación de cross fold validation
-scores = cross_val_score(clf, X, np.ravel(Y), cv=cv_suffled)
+scores = cross_val_score(clf, X, Y, cv=cv_suffled)
 
 
