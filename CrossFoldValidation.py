@@ -29,11 +29,6 @@ Y_vector = pd.read_csv("trn_tst/Y.csv", names=[0])
 
 Y = np.ravel(Y_vector)
 
-"""
-X_iris, Y_iris = datasets.load_iris(return_X_y=True)
-"""
-##X.shape, Y.shape
-
 # Se dividen en training y test, mientras que se revuelven los datos.
 """
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
@@ -43,11 +38,11 @@ scores = clf.score(X_test, y_test)
 """
 # Selección del modelo y parámetros: Support Vector Machine
 # Sustituir por un shuffle diferente, que no divida en training/test, y hacer pruebas de ambos
-cv_suffled = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0) 
+cv_suffled = ShuffleSplit(n_splits=10, test_size=0.3, random_state=0) 
 clf = svm.SVC(kernel='linear', C=1)
 #clf.fit(X,Y)
 
 #Aplicación de cross fold validation
 scores = cross_val_score(clf, X, Y, cv=cv_suffled)
-
+print("Accuracy: %0.2f" % (scores.mean()))
 
