@@ -15,3 +15,6 @@ valor_aleatorio = 2
 calculo = ClassDbinv(valor_aleatorio).dbinv
 -------------------------------
 """
+
+A = [[1, 4, 5], 
+    [-5, 8, 9]]
