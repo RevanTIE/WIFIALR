@@ -4,4 +4,4 @@ clear;
 %dboutput = db(X,'power');
 %salidaTradicional = 10*log10(X);
 
-A=[1,2,3;4,5,6;7,8,9];
+triangle = [1 3 6];

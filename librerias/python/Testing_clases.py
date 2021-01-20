@@ -6,6 +6,7 @@ Created on Wed Jan 13 23:15:05 2021
 """
 
 from Cdbinv import ClassDbinv
+import pandas as pd
 
 """----------------------------
 Test Cdbinv
@@ -16,5 +17,13 @@ calculo = ClassDbinv(valor_aleatorio).dbinv
 -------------------------------
 """
 
-A = [[1, 4, 5], 
-    [-5, 8, 9]]
+n = 6
+#listofzeros = [{}] * n
+
+listofzeros = [0] * n
+ret =  pd.MultiIndex.from_arrays([listofzeros])
+
+#x = -1
+
+#if x < 0:
+#  raise Exception("Sorry, no numbers below zero") 

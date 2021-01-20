@@ -6,27 +6,33 @@ Created on Mon Jan 18 00:14:29 2021
 """
 from statistics import mean
 import math
+import pandas as pd
 import numpy as np
+import sys
 
 def dbinv(x):
-    dbinv =  10**(x/10)
-    return dbinv
+    ret =  10**(x/10)
+    return ret
 
 def get_total_rss(csi_st):
     ## Condición de error puede manejarse con try - catch
-    rssi_mag = 0
-    
-    if (csi_st.rssi_a != 0):
-        rssi_mag = rssi_mag + dbinv(csi_st.rssi_a)
+    try:
+        rssi_mag = 0
         
-    if (csi_st.rssi_b != 0):
-        rssi_mag = rssi_mag + dbinv(csi_st.rssi_b)
+        if (csi_st.rssi_a != 0):
+            rssi_mag = rssi_mag + dbinv(csi_st.rssi_a)
+            
+        if (csi_st.rssi_b != 0):
+            rssi_mag = rssi_mag + dbinv(csi_st.rssi_b)
+        
+        if (csi_st.rssi_c != 0):
+            rssi_mag = rssi_mag + dbinv(csi_st.rssi_c)
     
-    if (csi_st.rssi_c != 0):
-        rssi_mag = rssi_mag + dbinv(csi_st.rssi_c)
-
-    ret = (10*math.log10(rssi_mag)) - 44 - csi_st.agc
-    return ret
+        ret = (10*math.log10(rssi_mag)) - 44 - csi_st.agc
+        return ret
+    except:
+        print("Se ha producido un error en 'get_total_rss'", sys.exc_info()[0])
+        return
 
 def phase_calibration(phasedata):
     calibrated_phase = []
@@ -51,7 +57,7 @@ def phase_calibration(phasedata):
     
     return calibrated_phase2
 
-def __init__(self, csi_st):    
+def get_scaled_csi(csi_st):    
     csi = csi_st.csi
     csi_sq = csi * np.conj(csi)
     

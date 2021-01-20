@@ -11,7 +11,10 @@ class ClassPhaseCalibration:
         import math
         import numpy as np
         
-        self.calibrated_phase[0] = phasedata[0]
+        calibrated_phase = []
+        self.calibrated_phase2 = []
+        
+        calibrated_phase[0] = phasedata[0]
         difference = 0
         
         for i in range(1,30):
@@ -20,10 +23,10 @@ class ClassPhaseCalibration:
             if (abs(temp) > math.pi): 
                 difference = self.difference + 1*np.sign[temp]
                 
-            self.calibrated_phase[i] = phasedata[i] - difference * 2 * math.pi
+            calibrated_phase[i] = phasedata[i] - difference * 2 * math.pi
             
-        k = (self.calibrated_phase[29] - self.calibrated_phase[0]) / (30 - 1)
-        b = mean(self.calibrated_phase)
+        k = (calibrated_phase[29] - calibrated_phase[0]) / (30 - 1)
+        b = mean(calibrated_phase)
         
         for i in range(30):
-            self.calibrated_phase2[i] = self.calibrated_phase[i] - k * i - b
+            self.calibrated_phase2[i] = calibrated_phase[i] - k * i - b
