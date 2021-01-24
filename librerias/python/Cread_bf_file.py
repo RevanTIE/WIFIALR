@@ -13,17 +13,19 @@ class ClassReadBfFile:
         
         # Aquí se definirán las condiciones de error
         try:
-            f = open(filename, "r")
+            f = open(filename, "rb")
             if (f<0):
                 raise Exception("No se puede abrir el archivo", filename)
             
             #Variable definition
             len= f.tell()
             
-            listofzeros = [0] * math.ceil(len/95)
-            self.ret =  pd.MultiIndex.from_arrays([listofzeros]) #Holds the return values - 1x1 CSI is 95 bytes big, so this should be upper bound
+            #listofzeros = [0] * math.ceil(len/95)
+            #self.ret =  pd.MultiIndex.from_arrays([listofzeros]) #Holds the return values - 1x1 CSI is 95 bytes big, so this should be upper bound
+            
+            self.ret = [{}] * math.ceil(len/95)
             cur = 0  #Current offset into file                    
-            count = 0 #Number of records output                
+            count = -1  #Number of records output                
             broken_perm = 0 #Flag marking whether we've encountered a broken CSI yet               
             triangle = [1, 3, 6]  #What perm should sum to for 1,2,3 antennas           
             

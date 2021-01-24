@@ -9,6 +9,13 @@ import math
 import pandas as pd
 import numpy as np
 import sys
+import csv
+from Cread_bf_file import ClassReadBfFile
+import itertools
+
+def db(x):
+    decibels = 10*math.log10
+    return decibels
 
 def dbinv(x):
     ret =  10**(x/10)
@@ -28,7 +35,7 @@ def get_total_rss(csi_st):
         if (csi_st.rssi_c != 0):
             rssi_mag = rssi_mag + dbinv(csi_st.rssi_c)
     
-        ret = (10*math.log10(rssi_mag)) - 44 - csi_st.agc
+        ret = (db(rssi_mag)) - 44 - csi_st.agc
         return ret
     except:
         print("Se ha producido un error en 'get_total_rss'", sys.exc_info()[0])
@@ -83,3 +90,43 @@ def get_scaled_csi(csi_st):
         ret = ret * np.sqrt(dbinv(4.5))
         
     return ret
+
+
+# Datfile_convert script
+[FileName,PathName,FilterIndex] = uigetfile('*.dat','MultiSelect','on')
+for i in range(len(FileName)):
+    csi_trace = ClassReadBfFile(strcat(PathName,char(FileName(i)))).ret
+    #csi_trace = read_bf_file(strcat(PathName,char(FileName(i))))
+    
+    # eliminate empty cell
+    xx = find(cellfun('isempty', csi_trace))
+    csi_trace(xx) = []
+
+    # Extract CSI information for each packet
+    print('Have CSI for {} packets\n'.format(len(csi_trace)))
+
+    # Scaled into linear
+    csi = zeros(len(csi_trace),3,30)
+    timestamp = zeros(1, len(csi_trace))
+    temp = []
+    for packet_index in range(len(csi_trace)):
+        csi[packet_index,:,:] = get_scaled_csi(csi_trace[packet_index])
+        timestamp[packet_index] = csi_trace[packet_index].timestamp_low * 1.0e-6
+    
+    timestamp = np.transpose(timestamp)
+
+    # File export
+    csi_amp_matrix = itertools.permutations(db(np.abs(np.squeeze(csi))), [2 3 1])
+    csi_phase_matrix = permute(np.angle(np.squeeze(csi)), [2 3 1])
+
+    for k in range(len(np.size(csi_phase_matrix,1))):
+        for j in range (len(np.size(csi_phase_matrix,3))):
+            csi_phase_matrix2[k,:,j] = np.transpose(phase_calibration(csi_phase_matrix[k,:,j]))
+        
+    for packet_index in range(len(csi_trace)):
+        temp = [temp;np.hstack(reshape(np.transpose(csi_amp_matrix[:,:,packet_index]),[0,89]), reshape(np.transpose(csi_phase_matrix2[:,:,packet_index]),[0,89]))]
+    
+
+    temp(temp==-Inf) = NaN;  #-Inf values replaced by NaN. By: Emmanuel L
+    FileName_new = FileName(i).replace(".dat", "")
+    csvwrite([PathName + FileName_new + '.csv'],np.hstack(timestamp,temp))
