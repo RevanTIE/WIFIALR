@@ -27,7 +27,7 @@ class ClassReadBfFile:
             cur = 0  #Current offset into file                    
             count = -1  #Number of records output                
             broken_perm = 0 #Flag marking whether we've encountered a broken CSI yet               
-            triangle = [1, 3, 6]  #What perm should sum to for 1,2,3 antennas           
+            triangle = (1, 3, 6)  #What perm should sum to for 1,2,3 antennas           
             
             #Se procesan todas las entradas del archivo
             while cur < (len - 3):

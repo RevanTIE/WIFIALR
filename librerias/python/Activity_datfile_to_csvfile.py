@@ -11,7 +11,11 @@ import numpy as np
 import sys
 import csv
 from Cread_bf_file import ClassReadBfFile
-import itertools
+from itertools import permutations
+
+from tkinter import Tk
+from tkinter.filedialog import askopenfilenames
+from tkinter import re #operaciones de matching de expresiones regulares
 
 def db(x):
     decibels = 10*math.log10
@@ -93,21 +97,31 @@ def get_scaled_csi(csi_st):
 
 
 # Datfile_convert script
-[FileName,PathName,FilterIndex] = uigetfile('*.dat','MultiSelect','on')
-for i in range(len(FileName)):
-    csi_trace = ClassReadBfFile(strcat(PathName,char(FileName(i)))).ret
+#Se abre una ventana de dialogo para solicitar el archivo csv
+root = Tk() #Elimina la ventana de Tkinter
+root.withdraw() #Ahora se cierra
+file_path = askopenfilenames(parent=root,title='Choose a file')
+
+for i in range(len(file_path)):
+    splitted = file_path[i].split("/")
+    file_name = splitted[-1]
+    folder_name = file_path[i].replace(file_name,'') 
+    
+    csi_trace = ClassReadBfFile(file_path[i]).ret
     #csi_trace = read_bf_file(strcat(PathName,char(FileName(i))))
     
     # eliminate empty cell
-    xx = find(cellfun('isempty', csi_trace))
-    csi_trace(xx) = []
+    #xx = find(cellfun('isempty', csi_trace))
+    
+    xx = [np.where(i == 'isempty') for i in csi_trace]
+    csi_trace[xx] = []
 
     # Extract CSI information for each packet
     print('Have CSI for {} packets\n'.format(len(csi_trace)))
 
     # Scaled into linear
-    csi = zeros(len(csi_trace),3,30)
-    timestamp = zeros(1, len(csi_trace))
+    csi = np.zeros(len(csi_trace),3,30)
+    timestamp = np.zeros(1, len(csi_trace))
     temp = []
     for packet_index in range(len(csi_trace)):
         csi[packet_index,:,:] = get_scaled_csi(csi_trace[packet_index])
@@ -116,17 +130,22 @@ for i in range(len(FileName)):
     timestamp = np.transpose(timestamp)
 
     # File export
-    csi_amp_matrix = itertools.permutations(db(np.abs(np.squeeze(csi))), [2 3 1])
-    csi_phase_matrix = permute(np.angle(np.squeeze(csi)), [2 3 1])
+    csi_amp_matrix = np.transpose(db(np.abs(np.squeeze(csi))), (2, 3, 1))
+    csi_phase_matrix = np.transpose(np.angle(np.squeeze(csi)), (2, 3, 1))
+    csi_phase_matrix2 = []
 
     for k in range(len(np.size(csi_phase_matrix,1))):
         for j in range (len(np.size(csi_phase_matrix,3))):
             csi_phase_matrix2[k,:,j] = np.transpose(phase_calibration(csi_phase_matrix[k,:,j]))
         
     for packet_index in range(len(csi_trace)):
-        temp = [temp;np.hstack(reshape(np.transpose(csi_amp_matrix[:,:,packet_index]),[0,89]), reshape(np.transpose(csi_phase_matrix2[:,:,packet_index]),[0,89]))]
+        temp = [temp, np.hstack(np.reshape(np.transpose(csi_amp_matrix[:,:,packet_index]),[0,89]), np.reshape(np.transpose(csi_phase_matrix2[:,:,packet_index]),[0,89]))]
     
 
-    temp(temp==-Inf) = NaN;  #-Inf values replaced by NaN. By: Emmanuel L
-    FileName_new = FileName(i).replace(".dat", "")
-    csvwrite([PathName + FileName_new + '.csv'],np.hstack(timestamp,temp))
+    temp[temp=='-Inf'] = 'NaN';  #-Inf values replaced by NaN. By: Emmanuel L
+    FileName_new = file_name.replace(".dat", "")
+    #csvwrite([PathName + FileName_new + '.csv'],
+             
+    CsvNewFile = np.hstack(timestamp,temp)
+    DFCsv = pd.DataFrame(CsvNewFile)
+    DFCsv.to_csv(r''+ folder_name + FileName_new, index = False)
