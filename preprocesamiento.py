@@ -65,7 +65,7 @@ def ruido(i):
 #Se abre una ventana de dialogo para solicitar el archivo csv
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
-file_path = askopenfilenames(parent=root,title='Choose a file')
+file_path = askopenfilenames(parent=root,title='Choose a file', filetypes = (("CSV Files","*.csv"),))
 
 for i in range(len(file_path)):
     splitted = file_path[i].split("/")
@@ -219,7 +219,7 @@ for i in range(len(file_path)):
     
     trn_normalizado= normalizar(sin_ruido_df)
     trn_normalizado['timestamp'] = tim_normalizado['timestamp']
-    
-    
+
+
     #Saber interpretar el nombre en automático
     trn_normalizado.to_csv(r''+ 'preprocesados' +'\input_' + file_name, index = False, header=True)

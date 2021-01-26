@@ -18,11 +18,16 @@ import numpy as np
 import os
 import glob
 from ClasesNumericas import ClasesNum
+from tkinter import Tk
+from tkinter.filedialog import askopenfilenames
 
-ruta = 'pca'
-os.chdir(ruta)
-pca_list = glob.glob('*.{}'.format('csv'))
+#ruta = 'pca'
+#os.chdir(ruta)
 
+root = Tk() #Elimina la ventana de Tkinter
+root.withdraw() #Ahora se cierra
+pca_list = askopenfilenames(parent=root, title='Choose a file', filetypes = (("CSV Files","*.csv"),))
+## pca_list = glob.glob('*.{}'.format('csv'))
 
 #X = np.zeros((139776, 7))
 #Y = np.zeros((19968, 1)) #Clases
@@ -48,6 +53,10 @@ movimientos para fines de training-test; o un dataset nuevo para validación.
 """
 
 for mov in range(len(pca_list)):
+    splitted = pca_list[mov].split("/")
+    file_name = splitted[-1]
+    folder_name = pca_list[mov].replace(file_name, '')
+
     matrix = pd.read_csv(pca_list[mov])
     count_rows = len(matrix)
     
@@ -74,7 +83,7 @@ for mov in range(len(pca_list)):
 df_X = pd.DataFrame(X[:, 1:len(X.transpose())])
 df_Y = pd.DataFrame(X[:, 0])
 
-os.chdir('../trn_tst')
+#os.chdir('../trn_tst')
 
-df_X.to_csv(r''+ 'X.csv', index = False, header=False)
-df_Y.to_csv(r''+ 'Y.csv', index = False, header=False)
+df_X.to_csv(r''+ 'trn_tst' + '\X.csv', index = False, header=False)
+df_Y.to_csv(r''+ 'trn_tst' +'\Y.csv', index = False, header=False)
