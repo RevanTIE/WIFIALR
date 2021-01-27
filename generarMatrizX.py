@@ -26,7 +26,7 @@ from tkinter.filedialog import askopenfilenames
 
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
-pca_list = askopenfilenames(parent=root, title='Choose a file', filetypes = (("CSV Files","*.csv"),))
+pca_list = askopenfilenames(parent=root, title='Choose a file', initialdir='pca', filetypes = (("CSV Files","*.csv"),))
 ## pca_list = glob.glob('*.{}'.format('csv'))
 
 #X = np.zeros((139776, 7))

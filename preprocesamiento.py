@@ -65,7 +65,7 @@ def ruido(i):
 #Se abre una ventana de dialogo para solicitar el archivo csv
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
-file_path = askopenfilenames(parent=root,title='Choose a file', filetypes = (("CSV Files","*.csv"),))
+file_path = askopenfilenames(parent=root,title='Choose a file', initialdir='datos_crudos', filetypes = (("CSV Files","*.csv"),))
 
 for i in range(len(file_path)):
     splitted = file_path[i].split("/")
