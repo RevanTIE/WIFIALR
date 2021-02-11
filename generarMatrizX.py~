@@ -85,5 +85,5 @@ df_Y = pd.DataFrame(X[:, 0])
 
 #os.chdir('../trn_tst')
 
-df_X.to_csv(r''+ 'trn_tst' + '/X.csv', index = False, header=False)
-df_Y.to_csv(r''+ 'trn_tst' +'/Y.csv', index = False, header=False)
+df_X.to_csv(r''+ 'trn_tst' + '\X.csv', index = False, header=False)
+df_Y.to_csv(r''+ 'trn_tst' +'\Y.csv', index = False, header=False)

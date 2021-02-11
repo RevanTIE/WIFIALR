@@ -200,4 +200,4 @@ for i in range(len(file_path)):
     pca_data2= visualize(file_path[i], short_name)
 
     pcaDataFrame = pd.DataFrame(pca_data2, columns=csv_col_list)
-    pcaDataFrame.to_csv(r''+ 'pca' +'/pca_' + file_name, index = False, header=True)
+    pcaDataFrame.to_csv(r''+ 'pca' +'\pca_' + file_name, index = False, header=True)

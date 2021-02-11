@@ -222,4 +222,4 @@ for i in range(len(file_path)):
 
 
     #Saber interpretar el nombre en automático
-    trn_normalizado.to_csv(r''+ 'preprocesados' +'/input_' + file_name, index = False, header=True)
+    trn_normalizado.to_csv(r''+ 'preprocesados' +'\input_' + file_name, index = False, header=True)
