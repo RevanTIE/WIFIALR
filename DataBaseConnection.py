@@ -34,6 +34,17 @@ class DataBase:
         except Exception as e:
             raise
             
+    def select_alertas(self, val_alerta):
+        sql = "SELECT ALERTA FROM alertas WHERE FK_MOVIMIENTO = '%s'" % val_alerta 
+    
+        try:
+            self.cursor.execute(sql)
+            alerta = self.cursor.fetchone()
+            print("ALERTA: UNA PERSONA", alerta[0])
+            
+        except Exception as e:
+            raise
+            
     def close(self):
         self.connection.close()
         
