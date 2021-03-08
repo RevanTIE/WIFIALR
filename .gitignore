@@ -1,3 +1,7 @@
 .ipynb_checkpoints/
 trn/
+datos_crudos/
+preprocesados/
+pca/
+trn_tst/
 __pycache__
