@@ -17,15 +17,15 @@ on_win = sys.platform.startswith("win")
 def clean(c):
     """ Remove any built objects """
     for file_pattern in (
-        "*.o",
-        "*.so",
-        "*.obj",
-        "*.dll",
-        "*.exp",
-        "*.lib",
-        "*.pyd",
-        "cffi_example*",  # Is this a dir?
-        "cython_wrapper.cpp",
+            "*.o",
+            "*.so",
+            "*.obj",
+            "*.dll",
+            "*.exp",
+            "*.lib",
+            "*.pyd",
+            "cffi_example*",  # Is this a dir?
+            "cython_wrapper.cpp",
     ):
         for file in glob.glob(file_pattern):
             os.remove(file)
@@ -136,6 +136,17 @@ def compile_python_module(cpp_name, extension_name):
     )
 
 
+def compile_python_windows_module(cpp_name, extension_name):
+    invoke.run(
+        "g++ -O3 -Wall -Werror -shared -std=c++11 -fPIC "
+        "`python3 -m pybind11 --includes` "
+        "-I /usr/lib/python3.7 -I .  "
+        "{0} "
+        "-o {1}`python3.7-config --extension-suffix` "
+        "-L. -lcppmult -Wl,-rpath,.".format(cpp_name, extension_name)
+    )
+
+
 @invoke.task(build_cppmult)
 def build_pybind11(c):
     """ Build the pybind11 wrapper library """
@@ -159,7 +170,7 @@ def build_cython(c):
     invoke.run("cython --cplus -3 cython_example.pyx -o cython_wrapper.cpp")
 
     # Compile and link the cython wrapper library
-    compile_python_module("cython_wrapper.cpp", "cython_example")
+    compile_python_windows_module("cython_wrapper.cpp", "cython_example")
     print("* Complete")
 
 
