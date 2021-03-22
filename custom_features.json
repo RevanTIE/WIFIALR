@@ -1,0 +1,32 @@
+{
+  "statistical": {
+    "Mean": {
+      "complexity": "constant",
+      "description": "Computes the mean value of the signal.",
+      "parameters": "",
+      "function": "tsfel.calc_mean",
+      "use": "yes"
+    },
+    "Median": {
+      "complexity": "constant",
+      "description": "Computes median of the signal.",
+      "parameters": "",
+      "function": "tsfel.calc_median",
+      "use": "yes"
+    },
+    "Root mean square": {
+      "complexity": "constant",
+      "description": "Computes root mean square of the signal.",
+      "parameters": "",
+      "function": "tsfel.rms",
+      "use": "yes"
+    },
+    "Variance": {
+      "complexity": "constant",
+      "description": "Computes variance of the signal.",
+      "parameters": "",
+      "function": "tsfel.calc_var",
+      "use": "yes"
+    }
+  }
+}

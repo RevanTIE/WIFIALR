@@ -118,65 +118,7 @@ def visualize(path1, file_nam):
     ax6.set_title("PCA 6th component")
 
     plt.savefig('pca/images/'+ file_nam +'_PCA.png')
-    """
-    plt.figure(figsize=(18, 30))
-    # Spectrogram(STFT)
-    plt.subplot(611)
-    Pxx, freqs, bins, im = plt.specgram(pca_data2[:, 0], NFFT=128, Fs=1000, noverlap=1, cmap="jet", vmin=-100, vmax=20)
-    plt.xlabel("Time[s]")
-    plt.ylabel("Frequency [Hz]")
-    plt.title("Spectrogram(STFT)")
-    plt.colorbar(im)
-    plt.xlim(0, 10)
-    plt.ylim(0, 100)
-
-    plt.subplot(612)
-    Pxx, freqs, bins, im = plt.specgram(pca_data2[:, 1], NFFT=128, Fs=1000, noverlap=1, cmap="jet", vmin=-100, vmax=20)
-    plt.xlabel("Time[s]")
-    plt.ylabel("Frequency [Hz]")
-    plt.title("Spectrogram(STFT)")
-    plt.colorbar(im)
-    plt.xlim(0, 10)
-    plt.ylim(0, 100)
-
-    plt.subplot(613)
-    Pxx, freqs, bins, im = plt.specgram(pca_data2[:, 2], NFFT=128, Fs=1000, noverlap=1, cmap="jet", vmin=-100, vmax=20)
-    plt.xlabel("Time[s]")
-    plt.ylabel("Frequency [Hz]")
-    plt.title("Spectrogram(STFT)")
-    plt.colorbar(im)
-    plt.xlim(0, 10)
-    plt.ylim(0, 100)
-
-    plt.subplot(614)
-    Pxx, freqs, bins, im = plt.specgram(pca_data2[:, 3], NFFT=128, Fs=1000, noverlap=1, cmap="jet", vmin=-100, vmax=20)
-    plt.xlabel("Time[s]")
-    plt.ylabel("Frequency [Hz]")
-    plt.title("Spectrogram(STFT)")
-    plt.colorbar(im)
-    plt.xlim(0, 10)
-    plt.ylim(0, 100)
-
-    plt.subplot(615)
-    Pxx, freqs, bins, im = plt.specgram(pca_data2[:, 4], NFFT=128, Fs=1000, noverlap=1, cmap="jet", vmin=-100, vmax=20)
-    plt.xlabel("Time[s]")
-    plt.ylabel("Frequency [Hz]")
-    plt.title("Spectrogram(STFT)")
-    plt.colorbar(im)
-    plt.xlim(0, 10)
-    plt.ylim(0, 100)
-
-    plt.subplot(616)
-    Pxx, freqs, bins, im = plt.specgram(pca_data2[:, 5], NFFT=128, Fs=1000, noverlap=1, cmap="jet", vmin=-100, vmax=20)
-    plt.xlabel("Time[s]")
-    plt.ylabel("Frequency [Hz]")
-    plt.title("Spectrogram(STFT)")
-    plt.colorbar(im)
-    plt.xlim(0, 10)
-    plt.ylim(0, 100)
-
-    plt.show()
-    """
+   
 
     return pca_data2
 

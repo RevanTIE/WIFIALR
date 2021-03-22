@@ -14,9 +14,10 @@ class ClassReadBfFile:
         # Aquí se definirán las condiciones de error
         try:
             f = open(filename, "rb")
+            """
             if (f<0):
                 raise Exception("No se puede abrir el archivo", filename)
-            
+            """
             #Variable definition
             len= f.tell()
             

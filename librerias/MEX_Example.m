@@ -1,0 +1,1 @@
+edit([matlabroot '/extern/examples/mx/mxcreatecharmatrixfromstr.c']);
