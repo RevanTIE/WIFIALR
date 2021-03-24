@@ -4,21 +4,29 @@ Created on Sun Oct  4 21:21:14 2020
 
 @author: elohe
 
-Script que toma 6 columnas de cada matriz de PCA, de cada movimiento,
-y construye una nueva matriz, que será dividida en training, testing y
-validation.
-
-Si se opta por la segunda metodología, crear copia de este script para generar 
-X y Y basados en los datos sin PCA (datos preprocesados).
+Script que extrae el Dominio del Tiempo de cada matriz de PCA, de cada movimiento,
+y construye una nueva matriz, que será dividida en training y testing.
 
 """
 
 import pandas as pd
 import numpy as np
 from ClasesNumericas import ClasesNum
+import tsfel
 from tkinter import Tk
 from tkinter.filedialog import askopenfilenames
 from tkinter.filedialog import askopenfilename
+
+"""
+    Atributos en el dominio del tiempo
+"""
+def AtribDomTiempo(df):
+    # Retrieves a pre-defined feature configuration file to extract all available features
+    cfg = tsfel.get_features_by_domain("statistical", "custom_features.json")
+
+    # Extract features
+    extracted_features = tsfel.time_series_features_extractor(cfg, df)
+    return extracted_features
 
 root = Tk()  # Elimina la ventana de Tkinter
 root.withdraw()  # Ahora se cierra
@@ -37,10 +45,12 @@ if (consideracion == "S"):
 
     for mov in range(len(pca_list)):
         X_matrix = pd.read_csv(pca_list[mov])
-        X_list.append(len(X_matrix))
+        X_vector = AtribDomTiempo(X_matrix)
+        X_list.append(len(X_vector))
 
     suma_x_list = sum(X_list)
-    X = np.zeros((suma_x_list, 7))
+    valor = len(X_vector.transpose())
+    X = np.zeros((suma_x_list, valor + 1))
 
     inc_rows_start = 0
     inc_rows_end = 0
@@ -51,13 +61,13 @@ if (consideracion == "S"):
         folder_name = pca_list[mov].replace(file_name, '')
 
         matrix = pd.read_csv(pca_list[mov])
-        count_rows = len(matrix)
+        vector = AtribDomTiempo(matrix)
+        count_rows = 1 #len(vector)
 
         if (mov == 0):
             inc_rows_end = X_list[mov]
 
         Y = np.zeros((count_rows, 1))
-        pca_matrix = matrix.iloc[:, 0:6]
 
         movimiento = pca_list[mov].split("_")[-4]
         tipo_movimiento = ClasesNum(movimiento).val_int_clase
@@ -65,9 +75,8 @@ if (consideracion == "S"):
         Y[Y == 0] = tipo_movimiento
 
         X[inc_rows_start:inc_rows_end, 0] = Y[:, 0]
-        X[inc_rows_start:inc_rows_end, 1:7] = pca_matrix
+        X[inc_rows_start:inc_rows_end, 1:len(vector.transpose()) + 1] = vector
 
-        # 8 if (inc_cols_start == 0) else 7
         if (mov != len(pca_list) - 1):
             inc_rows_start = inc_rows_end
             inc_rows_end += X_list[mov + 1]
@@ -84,8 +93,7 @@ else:
     splitted = pca_file.split("/")
     file_name = splitted[-1]
 
-    matrix = pd.read_csv(pca_file)
-    pca_matrix = matrix.iloc[:, 0:6]
+    vector = pd.read_csv(pca_file)
 
-    df_X = pd.DataFrame(pca_matrix)
+    df_X = pd.DataFrame(vector)
     df_X.to_csv(r'' + 'datos_nuevos' + '/' + file_name, index=False, header=False)

@@ -23,10 +23,6 @@ splitted = pca_file.split("/")
 file_name = splitted[-1]
 
 df = pd.read_csv(pca_file)
-##pca_matrix = matrix.iloc[:, 0:6]
-##df = pd.DataFrame(pca_matrix)
-
-##df = pd.read_csv('Dataset.txt')
 
 # Retrieves a pre-defined feature configuration file to extract all available features
 cfg = tsfel.get_features_by_domain("statistical", "custom_features.json")

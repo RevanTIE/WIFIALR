@@ -3,5 +3,5 @@ trn/
 datos_crudos/
 preprocesados/
 pca/
-trn_tst/
+trn_tst/legacy
 __pycache__

@@ -1,5 +1,5 @@
 """
-Script para la clasificación de los datos nuevos que lleguen
+Script del proceso completo implementando el modelo construido
 Nota: Falta incluir funciones de la conversión de datos de .dat a .csv.
 """
 
@@ -13,7 +13,18 @@ from sklearn.neural_network import MLPClassifier
 from sklearn import neighbors
 from sklearn import svm
 import statistics as stat
+import tsfel
 
+"""
+    Atributos en el dominio del tiempo
+"""
+def AtribDomTiempo(df):
+    # Retrieves a pre-defined feature configuration file to extract all available features
+    cfg = tsfel.get_features_by_domain("statistical", "custom_features.json")
+
+    # Extract features
+    extracted_features = tsfel.time_series_features_extractor(cfg, df)
+    return extracted_features
 
 ##Función de normalización manual
 def normalizar(df):
