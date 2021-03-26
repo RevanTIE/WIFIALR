@@ -93,7 +93,7 @@ else:
     splitted = pca_file.split("/")
     file_name = splitted[-1]
 
-    vector = pd.read_csv(pca_file)
-
+    matriz = pd.read_csv(pca_file)
+    vector = AtribDomTiempo(matriz)
     df_X = pd.DataFrame(vector)
     df_X.to_csv(r'' + 'datos_nuevos' + '/' + file_name, index=False, header=False)

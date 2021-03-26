@@ -214,13 +214,16 @@ def fpca(datos, file_nam):
     return pcaDataFrame
 
 
-def fclasificacion(pca_matrix):
-    contador = [1, 2, 3, 4, 5, 6]
+def fclasificacion(pca_vector):
+    contador = []
+    for i in range(len(pca_vector)):
+        contador.append(i + 1)
+
     X_train = pd.read_csv("trn_tst/X.csv", names=contador)
     Y_vector = pd.read_csv("trn_tst/Y.csv", names=[0])
 
     y_train = np.ravel(Y_vector)
-    X_test = pca_matrix
+    X_test = pca_vector
     
     database = DataBase()
 
@@ -283,10 +286,9 @@ for i in range(len(file_path)):
 
     datos_preprocesados = preprocesamiento(file_path[i], csv_headers)
     datos_pca = fpca(datos_preprocesados, short_name)
+    vector = AtribDomTiempo(datos_pca)
 
-    pca_matrix = datos_pca.iloc[:, 0:6]
-
-    mov_predecido = fclasificacion(pca_matrix)
+    mov_predecido = fclasificacion(vector)
 
     try:
         database = DataBase()
