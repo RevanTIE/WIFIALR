@@ -216,7 +216,7 @@ def fpca(datos, file_nam):
 
 def fclasificacion(pca_vector):
     contador = []
-    for i in range(len(pca_vector)):
+    for i in range(len(pca_vector.transpose())):
         contador.append(i + 1)
 
     X_train = pd.read_csv("trn_tst/X.csv", names=contador)
@@ -286,7 +286,7 @@ for i in range(len(file_path)):
 
     datos_preprocesados = preprocesamiento(file_path[i], csv_headers)
     datos_pca = fpca(datos_preprocesados, short_name)
-    vector = AtribDomTiempo(datos_pca)
+    vector = AtribDomTiempo(datos_pca.iloc[:])
 
     mov_predecido = fclasificacion(vector)
 
