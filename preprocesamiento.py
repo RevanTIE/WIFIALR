@@ -65,6 +65,10 @@ def ruido(i):
 #Se abre una ventana de dialogo para solicitar el archivo csv
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
+"""
+    Preguntar si se desea almacenar datos min y max en la base de datos
+"""
+min_max_response = input("¿Desea almacenar valores mínimos y máximos en la base de datos? S = SI, N = NO: ")
 file_path = askopenfilenames(parent=root,title='Choose a file', initialdir='datos_crudos', filetypes = (("CSV Files","*.csv"),))
 
 for i in range(len(file_path)):
@@ -129,16 +133,11 @@ for i in range(len(file_path)):
         minimos[:, col] = trn_nruido_ntime[:, col].min()
         maximos[:, col] = trn_nruido_ntime[:, col].max()
     
-    """
-    Preguntar si se desea almacenar datos min y max en la base de datos
-    
-    Se deben almacenar datos mínimos y máximos de cada subcarrier, de los datos originales 
+    """    
+    Almacenamiento de los datos mínimos y máximos de cada subcarrier, de los datos originales 
     en la tabla de MIN_MAX de la base de datos, por cada movimiento.
     
     """
-    
-    min_max_response = input("¿Desea almacenar valores mínimos y máximos de {} en la base de datos? S = SI, N = NO: ".format(file_name))
-    
     
     if (min_max_response == "S"):
         ### Mínimos

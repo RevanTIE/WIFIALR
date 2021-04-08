@@ -109,34 +109,36 @@ def moving_average(data, window_size):
     return np.convolve(data, window, 'same')
 
 
-def fpca(datos, file_nam):
+def fpca(datos, file_nam, file_extension_name):
     # data import
     data = datos.values
     amp = data[1:len(data), 1:91]
     # plt
-    
-    fig = plt.figure(figsize=(18, 15))
-    ax1 = plt.subplot(311)
-    plt.imshow(amp[:, 0:29].T, interpolation="nearest", aspect="auto", cmap="jet")
-    plt.xlabel("Packet index")
-    plt.ylabel("Subcarrier index")
-    ax1.set_title("Antenna A")
-    plt.colorbar()
 
-    ax2 = plt.subplot(312)
-    plt.imshow(amp[:, 30:59].T, interpolation="nearest", aspect="auto", cmap="jet")
-    plt.xlabel("Packet index")
-    plt.ylabel("Subcarrier index")
-    ax2.set_title("Antenna B")
-    plt.colorbar()
+    if guardarImagenes == "S":
 
-    ax3 = plt.subplot(313)
-    plt.imshow(amp[:, 60:89].T, interpolation="nearest", aspect="auto", cmap="jet")
-    plt.xlabel("Packet index")
-    plt.ylabel("Subcarrier index")
-    ax3.set_title("Antenna C")
-    plt.colorbar()
-    plt.savefig('pca/images/' + file_nam + '_amplitude.png')
+        fig = plt.figure(figsize=(18, 15))
+        ax1 = plt.subplot(311)
+        plt.imshow(amp[:, 0:29].T, interpolation="nearest", aspect="auto", cmap="jet")
+        plt.xlabel("Packet index")
+        plt.ylabel("Subcarrier index")
+        ax1.set_title("Antenna A")
+        plt.colorbar()
+
+        ax2 = plt.subplot(312)
+        plt.imshow(amp[:, 30:59].T, interpolation="nearest", aspect="auto", cmap="jet")
+        plt.xlabel("Packet index")
+        plt.ylabel("Subcarrier index")
+        ax2.set_title("Antenna B")
+        plt.colorbar()
+
+        ax3 = plt.subplot(313)
+        plt.imshow(amp[:, 60:89].T, interpolation="nearest", aspect="auto", cmap="jet")
+        plt.xlabel("Packet index")
+        plt.ylabel("Subcarrier index")
+        ax3.set_title("Antenna C")
+        plt.colorbar()
+        plt.savefig('pca/images/' + file_nam + '_amplitude.png')
     
     # Initializing variables
     constant_offset = np.empty_like(amp)
@@ -162,54 +164,58 @@ def fpca(datos, file_nam):
     eig_vec2 = eig_vec2[:, idx]
     # Calculate H * eig_vec
     pca_data2 = filtered_data.dot(eig_vec2)
-    
-    fig3 = plt.figure(figsize=(18, 30))
 
-    ax1 = plt.subplot(611)
-    plt.plot(pca_data2[:, 0])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,0])
-    ax1.set_title("PCA 1st component")
+    if guardarImagenes == "S":
+        fig3 = plt.figure(figsize=(18, 30))
 
-    ax2 = plt.subplot(612)
-    plt.plot(pca_data2[:, 1])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,1])
-    ax2.set_title("PCA 2nd component")
+        ax1 = plt.subplot(611)
+        plt.plot(pca_data2[:, 0])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,0])
+        ax1.set_title("PCA 1st component")
 
-    ax3 = plt.subplot(613)
-    plt.plot(pca_data2[:, 2])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,2])
-    ax3.set_title("PCA 3rd component")
+        ax2 = plt.subplot(612)
+        plt.plot(pca_data2[:, 1])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,1])
+        ax2.set_title("PCA 2nd component")
 
-    ax4 = plt.subplot(614)
-    plt.plot(pca_data2[:, 3])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,3])
-    ax4.set_title("PCA 4th component")
+        ax3 = plt.subplot(613)
+        plt.plot(pca_data2[:, 2])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,2])
+        ax3.set_title("PCA 3rd component")
 
-    ax5 = plt.subplot(615)
-    plt.plot(pca_data2[:, 4])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,4])
-    ax5.set_title("PCA 5th component")
+        ax4 = plt.subplot(614)
+        plt.plot(pca_data2[:, 3])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,3])
+        ax4.set_title("PCA 4th component")
 
-    ax6 = plt.subplot(616)
-    plt.plot(pca_data2[:, 5])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,5])
-    ax6.set_title("PCA 6th component")
+        ax5 = plt.subplot(615)
+        plt.plot(pca_data2[:, 4])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,4])
+        ax5.set_title("PCA 5th component")
 
-    plt.savefig('pca/images/'+ file_nam +'_PCA.png')
+        ax6 = plt.subplot(616)
+        plt.plot(pca_data2[:, 5])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,5])
+        ax6.set_title("PCA 6th component")
+
+        plt.savefig('pca/images/'+ file_nam +'_PCA.png')
     
     pcaDataFrame = pd.DataFrame(pca_data2, columns=csv_col_list)
+
+    if elementosTraining == "S":
+        pcaDataFrame.to_csv(r'' + 'pca' + '/pca_' + file_extension_name, index=False, header=True)
     
     return pcaDataFrame
 
@@ -268,6 +274,16 @@ def fclasificacion(pca_vector):
 #Se abre una ventana de dialogo para solicitar el archivo csv
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
+
+"""
+    Preguntar si se desea tratar la lista como elementos de Trainig para generar matrices de PCA
+"""
+elementosTraining = input("¿Desea Tratar los datos como training? S = SI, N = NO: ")
+"""
+    Preguntar si se desea almacenar las imagenes en la carpeta en PCA
+"""
+guardarImagenes = input("¿Desea almacenar las imagenes de PCA? S = SI, N = NO: ")
+
 file_path = askopenfilenames(parent=root, title='Choose a file', initialdir='datos_crudos',
                                filetypes=(("CSV Files", "*.csv"),))
 
@@ -285,17 +301,17 @@ for i in range(len(file_path)):
     print('Pruebas de : %s' % short_name)
 
     datos_preprocesados = preprocesamiento(file_path[i], csv_headers)
-    datos_pca = fpca(datos_preprocesados, short_name)
-    vector = AtribDomTiempo(datos_pca.iloc[:])
+    datos_pca = fpca(datos_preprocesados, short_name, file_name)
 
-    mov_predecido = fclasificacion(vector)
+    if elementosTraining == "N":
+        vector = AtribDomTiempo(datos_pca.iloc[:])
+        mov_predecido = fclasificacion(vector)
 
-    try:
-        database = DataBase()
-        database.select_alertas(mov_predecido)
-        database.close()
+        try:
+            database = DataBase()
+            database.select_alertas(mov_predecido)
+            database.close()
 
-    except Exception as e:
-        raise
-
+        except Exception as e:
+            raise
 

@@ -17,30 +17,30 @@ def visualize(path1, file_nam):
     data = pd.read_csv(path1).values
     amp = data[1:len(data), 1:91]
 
+    if guardarImagenes == "S":
+        # plt
+        fig = plt.figure(figsize=(18, 15))
+        ax1 = plt.subplot(311)
+        plt.imshow(amp[:, 0:29].T, interpolation="nearest", aspect="auto", cmap="jet")
+        plt.xlabel("Packet index")
+        plt.ylabel("Subcarrier index")
+        ax1.set_title("Antenna A")
+        plt.colorbar()
 
-    # plt
-    fig = plt.figure(figsize=(18, 15))
-    ax1 = plt.subplot(311)
-    plt.imshow(amp[:, 0:29].T, interpolation="nearest", aspect="auto", cmap="jet")
-    plt.xlabel("Packet index")
-    plt.ylabel("Subcarrier index")
-    ax1.set_title("Antenna A")
-    plt.colorbar()
+        ax2 = plt.subplot(312)
+        plt.imshow(amp[:, 30:59].T, interpolation="nearest", aspect="auto", cmap="jet")
+        plt.xlabel("Packet index")
+        plt.ylabel("Subcarrier index")
+        ax2.set_title("Antenna B")
+        plt.colorbar()
 
-    ax2 = plt.subplot(312)
-    plt.imshow(amp[:, 30:59].T, interpolation="nearest", aspect="auto", cmap="jet")
-    plt.xlabel("Packet index")
-    plt.ylabel("Subcarrier index")
-    ax2.set_title("Antenna B")
-    plt.colorbar()
-
-    ax3 = plt.subplot(313)
-    plt.imshow(amp[:, 60:89].T, interpolation="nearest", aspect="auto", cmap="jet")
-    plt.xlabel("Packet index")
-    plt.ylabel("Subcarrier index")
-    ax3.set_title("Antenna C")
-    plt.colorbar()
-    plt.savefig('pca/images/' + file_nam + '_amplitude.png')
+        ax3 = plt.subplot(313)
+        plt.imshow(amp[:, 60:89].T, interpolation="nearest", aspect="auto", cmap="jet")
+        plt.xlabel("Packet index")
+        plt.ylabel("Subcarrier index")
+        ax3.set_title("Antenna C")
+        plt.colorbar()
+        plt.savefig('pca/images/' + file_nam + '_amplitude.png')
 
 
     # Initializing variables
@@ -72,53 +72,52 @@ def visualize(path1, file_nam):
     # xmax = 20000
     # plt
 
+    if guardarImagenes == "S":
+        fig3 = plt.figure(figsize=(18, 30))
 
-    fig3 = plt.figure(figsize=(18, 30))
+        ax1 = plt.subplot(611)
+        plt.plot(pca_data2[:, 0])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,0])
+        ax1.set_title("PCA 1st component")
 
-    ax1 = plt.subplot(611)
-    plt.plot(pca_data2[:, 0])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,0])
-    ax1.set_title("PCA 1st component")
+        ax2 = plt.subplot(612)
+        plt.plot(pca_data2[:, 1])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,1])
+        ax2.set_title("PCA 2nd component")
 
-    ax2 = plt.subplot(612)
-    plt.plot(pca_data2[:, 1])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,1])
-    ax2.set_title("PCA 2nd component")
+        ax3 = plt.subplot(613)
+        plt.plot(pca_data2[:, 2])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,2])
+        ax3.set_title("PCA 3rd component")
 
-    ax3 = plt.subplot(613)
-    plt.plot(pca_data2[:, 2])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,2])
-    ax3.set_title("PCA 3rd component")
+        ax4 = plt.subplot(614)
+        plt.plot(pca_data2[:, 3])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,3])
+        ax4.set_title("PCA 4th component")
 
-    ax4 = plt.subplot(614)
-    plt.plot(pca_data2[:, 3])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,3])
-    ax4.set_title("PCA 4th component")
+        ax5 = plt.subplot(615)
+        plt.plot(pca_data2[:, 4])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,4])
+        ax5.set_title("PCA 5th component")
 
-    ax5 = plt.subplot(615)
-    plt.plot(pca_data2[:, 4])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,4])
-    ax5.set_title("PCA 5th component")
+        ax6 = plt.subplot(616)
+        plt.plot(pca_data2[:, 5])
+        plt.xlabel("Time[s]")
+        plt.ylabel("Observation values")
+        # plt.plot(pca_data2[2500:17500,5])
+        ax6.set_title("PCA 6th component")
 
-    ax6 = plt.subplot(616)
-    plt.plot(pca_data2[:, 5])
-    plt.xlabel("Time[s]")
-    plt.ylabel("Observation values")
-    # plt.plot(pca_data2[2500:17500,5])
-    ax6.set_title("PCA 6th component")
-
-    plt.savefig('pca/images/'+ file_nam +'_PCA.png')
-   
+        plt.savefig('pca/images/'+ file_nam +'_PCA.png')
 
     return pca_data2
 
@@ -129,6 +128,11 @@ csv_col_list = csv_cols["Column_Names"].tolist()
 
 root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
+
+"""
+    Preguntar si se desea almacenar las imagenes en la carpeta en PCA
+"""
+guardarImagenes = input("¿Desea almacenar las imagenes de PCA? S = SI, N = NO: ")
 file_path = askopenfilenames(parent=root, title='Choose a file', initialdir='preprocesados', filetypes = (("CSV Files","*.csv"),)) #Se abre el explorador de archivos y se guarda la selección
 
 for i in range(len(file_path)):
