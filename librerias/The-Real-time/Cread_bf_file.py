@@ -58,7 +58,7 @@ def read_bf_file(filename):
 
         #If unhandled code, skip (seek over) the record and continue
         if code == 187: # get beamforming or phy data
-            bytes = fd[cur:cur+field_len-1]
+            bytes = np.fromstring(fd[cur:cur+field_len-1], dtype='uint8')
             cur = cur + field_len - 1
             if (len(bytes) != field_len-1):
                 #fd.close()
@@ -87,11 +87,10 @@ def read_bf_file(filename):
                     print('WARN ONCE: Found CSI with Nrx=', Nrx, ' and invalid perm=\n')
                     ##print('WARN ONCE: Found CSI {} with Nrx={} and invalid perm={}\n'.format(filename, Nrx, str(perm)))
                 else:
-                    ret[count][11][:,perm[0:Nrx],:] = ret[count][11][:,0:Nrx,:]
+                    ret[count][11][:, perm[0:Nrx], :] = ret[count][11][:, 0:Nrx, :]
 
     ##Aqui termina while
-    ret = ret[1:count]
-    #fd.close()
+    ret = ret[0:count]
     return ret
     """
     except:
