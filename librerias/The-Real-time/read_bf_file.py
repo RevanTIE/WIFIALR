@@ -5,7 +5,6 @@ import pyqtgraph as pg
 import matplotlib.pyplot as plt
 
 #import ctypes
-
 while True:
     win = pg.GraphicsWindow()
     p = win.addPlot()
@@ -47,8 +46,8 @@ while True:
     
     c, addr = s.accept()     # 建立客户端连接。
     c.settimeout(15)
-    buffersize = 102400  # 204800: No se grafica; 102400 (a veces no se grafica), 20480 y 1024: Se grafica y solo dura 4 segs
-    c.recv(102400) # Añadido por Emmanuel López Hernández
+    #buffersize = 1024  # 204800: No se grafica; 102400 (a veces no se grafica), 20480 y 1024: Se grafica y solo dura 4 segs
+    #c.recv(1024) # Añadido por Emmanuel López Hernández
 
     print('连接地址：', addr)
     fd = c.makefile('rb')
@@ -96,7 +95,7 @@ while True:
                 c.close()
                 exit()
              
-        elif field_len <= buffersize:  # skip all other info
+        elif field_len <= 1024:  # skip all other info
             fd.read(field_len-1)
             continue;
         else:
@@ -122,8 +121,6 @@ while True:
             
             x = np.arange(30)
             """
-            
-            
             p1.imshow(get_scaled_csi.db(abs(csi[0:29, 0, :])).T, interpolation="nearest", aspect="auto", cmap="jet")
             p2.imshow(get_scaled_csi.db(abs(csi[0:29, 0, :])).T, interpolation="nearest", aspect="auto", cmap="jet")
             p3.imshow(get_scaled_csi.db(abs(csi[0:29, 0, :])).T, interpolation="nearest", aspect="auto", cmap="jet")
