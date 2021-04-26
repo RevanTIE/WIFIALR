@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan 18 00:14:29 2021
-
 @author: elohe
 """
 from statistics import mean
@@ -23,11 +22,9 @@ from tkinter import re #operaciones de matching de expresiones regulares
 def db(x):
     decibels = 10*math.log10
     return decibels
-
 def dbinv(x):
     ret =  10**(x/10)
     return ret
-
 def get_total_rss(csi_st):
     ## Condición de error puede manejarse con try - catch
     try:
@@ -149,10 +146,8 @@ for i in range(len(file_path)):
     # File export                 
     csi_amp_matrix = np.transpose(get_scaled_csi.db(abs(np.squeeze(csi))), (2, 3, 1))
     csi_phase_matrix = np.transpose(np.angle(np.squeeze(csi)), (2, 3, 1))
-
     
     csi_phase_matrix2 = []
-
     for k in range(len(np.size(csi_phase_matrix,1))):
         for j in range (len(np.size(csi_phase_matrix,3))):
             csi_phase_matrix2[k,:,j] = np.transpose(phase_calibration(csi_phase_matrix[k,:,j]))

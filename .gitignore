@@ -4,5 +4,9 @@ datos_crudos/
 datos_nuevos/
 preprocesados/
 pca/
+librerias/The-Real-time/linux-80211n-csitool-supplementary
+librerias/The-Real-time/CSI_Monitor.py
+librerias/The-Real-time/ejecutable.m
+librerias/The-Real-time/read_bf_socket.m
 trn_tst/legacy
 __pycache__

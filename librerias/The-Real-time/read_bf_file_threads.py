@@ -1,32 +1,30 @@
-import read_bfee, get_scaled_csi
+import read_bfee
+import get_scaled_csi
 import socket               # Importar el módulo de socket
 import numpy as np
 import pyqtgraph as pg
 import threading
 import queue
-import re
-import time
-from math import sqrt, atan2
-import matplotlib.pyplot as plt
 
-#import ctypes
-
-#Clase que contiene amplitud y fase de una lectura CSIisRunning
+# Clase que contiene amplitud y fase de una lectura CSIisRunning
 class CSIData:
     def __init__(self, scaledCSI):
         self.scaledCSI = scaledCSI
 
 #Hilo para procesar la informacion recibida por el puerto de comunicacion serial
 def processThread ():
-    while True: 
+    global clientConnection
+    while True:
         msg = msgQueue.get(block = True) #bloqueara el hilo hasta que haya un elemento disponible
         scaledCSI = []  # Matriz que ira almacenando los valores escalados de CSI
         try:
             fl = msg.read(2)
             field_len = int.from_bytes(fl, 'big')
             if field_len == 0:
+                clientConnection = False
                 break
-        except:
+        except: # se podría establecer una variable bool, que indique que el programa ha perdido conexión con el cliente.
+             ## con una variable global
             print('Timeout, please restart the client and connect again.')
             break
         co = msg.read(1)
@@ -72,25 +70,54 @@ def processThread ():
             scaledCSI.append(csi[i])
 
         newCSI = CSIData(scaledCSI)
-        csi_entry = []
         rdyQueue.put(newCSI)
 
 
 #Hilo para escribir en archivo
 
-def writingThread():
+def plotThread():
     while True:
-        csiDatos = rdyQueue.get(block = True)
+        try:
+            csiDatos = rdyQueue.get(block=True)
+
+            if csiDatos == 0:
+                break
+        except:
+            break
+
         x = np.arange(30)
-        #for sc in csiDatos.scaledCSI:
-            #amplitudeMatrix.append(amps)
-            ## En este punto obtener la Amplitud
-        p1.setData(x, get_scaled_csi.db(abs(csiDatos.scaledCSI[0][0][:].flatten())))
+        #  p1.setData(x, db(abs(frames[0].csi_matrix[0][0])).transpose().flatten())))
+        #  p2.setData(x, db(abs(frames[0].csi_matrix[0][1])).transpose().flatten())))
+        #  p3.setData(x, db(abs(frames[0].csi_matrix[0][2])).transpose().flatten())))
+        p1.setData(x, get_scaled_csi.db(abs(csiDatos.scaledCSI[0][0][:].flatten()))) 
         p2.setData(x, get_scaled_csi.db(abs(csiDatos.scaledCSI[0][1][:].flatten())))
         p3.setData(x, get_scaled_csi.db(abs(csiDatos.scaledCSI[0][2][:].flatten())))
-            #amplitudeFile.write(str(amps)+" ")
-        #amplitudeFile.write("\n")
 
+
+def writingThread():
+    while True:
+        try:
+            csiDatos = rdyQueue.get(block=True)
+
+            if csiDatos == 0:
+                break
+        except:
+            break
+
+        csi_1.append(csiDatos.scaledCSI[0][0][:])
+        csi_2.append(csiDatos.scaledCSI[0][1][:])
+        csi_3.append(csiDatos.scaledCSI[0][2][:])
+        #csi_1.append(get_scaled_csi.db(abs(np.squeeze(csiDatos.scaledCSI[0][0][:]))))
+        #csi_2.append(get_scaled_csi.db(abs(np.squeeze(csiDatos.scaledCSI[0][1][:]))))
+        #csi_3.append(get_scaled_csi.db(abs(np.squeeze(csiDatos.scaledCSI[0][2][:]))))
+
+
+csi_1 = []
+csi_2 = []
+csi_3 = []
+clientConnection = True  ## Indica si existe actualmente conexión con el cliente
+print("Inicio")
+#threads.join - Para que el hilo principal espere a que terminen los hilos hijos
 while True:
     #FIFO que almacena de manera temporal los mensajes recibidos, tamaño indefinido...
     msgQueue = queue.Queue()
@@ -115,7 +142,7 @@ while True:
     s.bind((host, port))        # Puerto de enlace
     s.listen(5)                 # En espera que el cliente se conecte
     print('waiting for connection on port', port)
-    
+
     c, addr = s.accept()     # Establecer conexión con el cliente
     c.settimeout(15)
     #buffersize = 1024  # 204800: No se grafica; 102400 (a veces no se grafica), 20480 y 1024: Se grafica y solo dura 4 segs
@@ -125,7 +152,7 @@ while True:
     fd = c.makefile('rb')
 
     #while True:
-    
+
     csi_entry = []
     index = -1                     # The index of the plots which need shadowing
     broken_perm = 0                # Flag marking whether we've encountered a broken CSI yet
@@ -136,13 +163,33 @@ while True:
     # Se activan los threads
     pthread = threading.Thread(target=processThread, daemon=True)
     pthread.start()
+    gthread = threading.Thread(target=plotThread, daemon=True)
+    gthread.start()
     wthread = threading.Thread(target=writingThread, daemon=True)
     wthread.start()
 
-    while True:
+
+    while clientConnection == True: # poner condición de salida
         # Read size and code from the received packets
         msgQueue.put(fd)
         pg.QtGui.QApplication.processEvents()
 
-    c.close()                # Cerrar la conexión
+    c.close()                # Cerrar la conexión - No está llegando aquí, se corta
+    pthread.join()
+    gthread.join()
+    wthread.join()
+
     pg.QtGui.QApplication.closeAllWindows()
+    print("Final")
+    CsvNewFile = np.zeros([len(np.transpose(csi_1)) + 1, len(np.transpose(csi_2)) + 1, len(np.transpose(csi_3)) + 1])
+    CsvNewFile = np.hstack([csi_1, csi_2, csi_3])
+    DFCsv = pd.DataFrame(CsvNewFile)
+    DFCsv.to_csv(r'' + 'datos_crudos' + '/csi_sin_escalar.csv', index=False)
+    break
+
+    """
+    csi_amp_matrix = np.zeros([len(amp_1), 90])
+    csi_amp_matrix[:, 0:30] = amp_1
+    csi_amp_matrix[:, 30:60] = amp_2
+    csi_amp_matrix[:, 60:90] = amp_3
+    """
