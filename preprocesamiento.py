@@ -89,7 +89,7 @@ for i in range(len(file_path)):
     
     #Se añaden los encabezados
     csv_headers = "csi_headers.csv"
-    csv_cols = pd.read_csv(csv_headers)
+    csv_cols = pd.read_csv(csv_headers)[0:91]
     csv_col_list = csv_cols["Column_Names"].tolist()
     
     trn = pd.read_csv(file_path[i], names=csv_col_list)
@@ -99,7 +99,7 @@ for i in range(len(file_path)):
     #Se convierte en dataframe
     trn_tim_df = pd.DataFrame(trn_tim)
     #Se calculan los segundos de actividad
-    tim_normalizado = normalizar(trn_tim_df) * (trn_tim.max() - trn_tim.min())
+    ## tim_normalizado = normalizar(trn_tim_df) * (trn_tim.max() - trn_tim.min())
     
     #Imputación de datos
     inf_estadistica_trn = trn.describe() #Por lo tanto existen datos faltantes.
@@ -109,14 +109,14 @@ for i in range(len(file_path)):
     #2. Debido a la recolección de los datos
     
     #Se pone nan como 0
-    trn_NaN_2_0 = trn.fillna(1.0000e-5)
+    trn_NaN_2_0 = trn.fillna(1.0000e-5) # Se puede mejorar la imputación de datos empleando otra función.
     
     #Eliminación de ruido
     trn_matrix = trn_NaN_2_0.values
     rows_matrix = len(trn_matrix)
     cols_matrix = len(np.transpose(trn_matrix))
     
-    trn_sin_ruido = trn_matrix[:, 0:cols_matrix] #Sin el timestamp, 180 variables
+    trn_sin_ruido = trn_matrix[:, 0:cols_matrix] #Sin el timestamp, 90 variables
     trn_sin_ruido_collected = trn_sin_ruido * 0
     
     for dat in range(cols_matrix):
@@ -126,8 +126,8 @@ for i in range(len(file_path)):
     
     minimos = np.zeros((1, 90))
     maximos = np.zeros((1, 90))
-    trn_nruido_ntime = trn_sin_ruido_collected[:, 1:-1]
-    tiempo = datetime.datetime.now()
+    trn_nruido_ntime = trn_sin_ruido_collected[:, 0:-1]
+    
     
     for col in range(len(np.transpose(minimos))):
         minimos[:, col] = trn_nruido_ntime[:, col].min()
@@ -140,6 +140,8 @@ for i in range(len(file_path)):
     """
     
     if (min_max_response == "S"):
+        tiempo = datetime.datetime.now()
+        
         ### Mínimos
         minimos_str = []
         mov_identifier = file_name.split("_")[-4]
@@ -202,9 +204,7 @@ for i in range(len(file_path)):
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        
-        
-        
+
         try:
            database.cursor.execute(sql_maximos, maximos_str)
            database.connection.commit()
@@ -217,7 +217,7 @@ for i in range(len(file_path)):
     #Los datos nuevos se normalizarán con la tabla MIN_MAX
     
     trn_normalizado= normalizar(sin_ruido_df)
-    trn_normalizado['timestamp'] = tim_normalizado['timestamp']
+    trn_normalizado['timestamp'] = trn_tim_df
 
 
     #Saber interpretar el nombre en automático

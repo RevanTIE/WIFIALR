@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+
+Script para extraer los Principales Componentes de la señal.
+
+@author: elohe
+"""
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
