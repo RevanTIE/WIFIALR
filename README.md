@@ -12,14 +12,14 @@ El siguiente proyecto incorpora scripts para el manejo de datasets, resultado de
 Orden de ejecución por pasos para Generación de Matriz de training X y Vector de clases Y
 Para la ejecución de cada uno de los pasos
 1.	read_file_py.py. Lectura del archivo binario .dat y su conversión a .csv.
-  a.	csi_headers.csv. Encabezados para cada una de las columnas de los datos.
-  b.	Amplitude.py. Función integrada en  read_file_py.py.  para la conversión de los datos obtenidos de CSI, a datos de Amplitud.
+  *	csi_headers.csv. Encabezados para cada una de las columnas de los datos.
+  *	Amplitude.py. Función integrada en  read_file_py.py.  para la conversión de los datos obtenidos de CSI, a datos de Amplitud.
 
 Almacena la matriz generada en la carpeta “/datos_crudos”.
 
 2.	preprocesamiento.py. Imputación de Datos, Eliminación de Ruido, y Normalización.
-  a.	DataBaseConnection.py. Clase para la conexión con la base de datos en MySQL Server. Es instanciada por preprocesamiento.py.
-  b.	ClasesNumericas.py. Clase para clasificar los datos de entrenamiento, que de antemano ya se sabe a qué movimiento pertenecen. Es instanciada por preprocesamiento.py.
+  *	DataBaseConnection.py. Clase para la conexión con la base de datos en MySQL Server. Es instanciada por preprocesamiento.py.
+  *	ClasesNumericas.py. Clase para clasificar los datos de entrenamiento, que de antemano ya se sabe a qué movimiento pertenecen. Es instanciada por preprocesamiento.py.
 
 Toma como entrada la matriz de “/datos_crudos”. Almacena la matriz generada en la carpeta “/preprocesados”; de manera opcional, realiza la inserción en la base de datos de los valores máximos y mínimos de cada columna de la matriz de entrada, para futuros análisis.
 
@@ -41,6 +41,6 @@ Toma como entrada el vector generado con “/scripts_de_apoyo/AtribDomTiempo.py�
 
 Para la ejecución de los pasos de manera integrada
 1.	AssembledModel.py. Script del proceso completo, desde la lectura del archivo .dat, hasta la clasificación, a partir de datos nunca antes vistos, tomando como base la matriz de datos training “/trn_tst/X.csv”, y el vector de datos “/trn_tst/Y.csv”, empleando algoritmos de Nearest Neighbors, Support Vector Machine y Neural Network. 
-  a.	custom_features.json. Script que permite obtener los atributos en el dominio del tiempo.  Es llamado por AssembledModel.py
+  *	custom_features.json. Script que permite obtener los atributos en el dominio del tiempo.  Es llamado por AssembledModel.py
 
 Toma como entrada el archivo un archivo nuevo .dat, y genera como salida, la clasificación en pantalla del tipo de movimiento introducido al algoritmo, de manera opcional, genera los heatmaps y gráficos de Amplitudes y PCA si se le indica que los guarde, al inicio de la ejecución del algoritmo. Utiliza la matriz de training X y el Vector de Clases Y, porque a partir de ellos se crean los respectivos modelos.
