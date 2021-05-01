@@ -1,6 +1,5 @@
 """
 Script del proceso completo implementando el modelo construido
-Nota: Falta incluir funciones de la conversión de datos de .dat a .csv.
 """
 
 import pandas as pd
@@ -14,6 +13,38 @@ from sklearn import neighbors
 from sklearn import svm
 import statistics as stat
 import tsfel
+
+from CSIKit.reader import get_reader
+import Amplitude
+from numpy import inf
+
+def extracting_csi(file_path):
+    splitted = file_path.split("/")
+    file_name = splitted[-1]
+
+    my_reader = get_reader(file_path)
+    csi_data = my_reader.read_file(file_path, scaled=True)
+    (csi_1, csi_2, csi_3) = Amplitude.get_CSI_Frames(csi_data)
+
+    csi_matrix_inversa_1 = csi_1.transpose()
+    csi_matrix_inversa_2 = csi_2.transpose()
+    csi_matrix_inversa_3 = csi_3.transpose()
+
+    timestamp_vector = csi_data.timestamps
+
+    csi_amp_matrix = np.zeros([csi_data.expected_frames, 90])
+    csi_amp_matrix[:, 0:30] = csi_matrix_inversa_1
+    csi_amp_matrix[:, 30:60] = csi_matrix_inversa_2
+    csi_amp_matrix[:, 60:90] = csi_matrix_inversa_3
+
+    csi_amp_matrix[csi_amp_matrix == -inf] = np.nan
+
+    csvNewFile = np.zeros([csi_data.expected_frames, len(np.transpose(csi_amp_matrix)) + 1])
+    time_v = np.ravel(timestamp_vector)
+
+    csvNewFile = np.c_[time_v, csi_amp_matrix]
+    dFCsv = pd.DataFrame(csvNewFile)
+    return dFCsv
 
 """
     Atributos en el dominio del tiempo
@@ -69,28 +100,31 @@ def ruido(i):
 
     return z_table
 
-def preprocesamiento(file_p, csv_headers):
+def preprocesamiento(file, csv_col_list):
     # Se añaden los encabezados
-    csv_cols = pd.read_csv(csv_headers)
-    csv_col_list = csv_cols["Column_Names"].tolist()
-    trn = pd.read_csv(file_p, names=csv_col_list)
+    trn = file
+    trn.columns = csv_col_list
     trn_tim = trn['timestamp']
 
     # Se convierte en dataframe
     trn_tim_df = pd.DataFrame(trn_tim)
-    # Se calculan los segundos de actividad
-    tim_normalizado = normalizar(trn_tim_df) * (trn_tim.max() - trn_tim.min())
 
     # Imputación de datos
+    inf_estadistica_trn = trn.describe()  # Por lo tanto existen datos faltantes.
+
+    # Razones por las que faltan datos:
+    # 1. Se puede optimizar el procesa de extracción de los datos
+    # 2. Debido a la recolección de los datos
+
     # Se pone nan como 0
-    trn_NaN_2_0 = trn.fillna(1.0000e-5)
+    trn_NaN_2_0 = trn.fillna(1.0000e-5)  # Se puede mejorar la imputación de datos empleando otra función.
 
     # Eliminación de ruido
     trn_matrix = trn_NaN_2_0.values
-    #rows_matrix = len(trn_matrix)
+    rows_matrix = len(trn_matrix)
     cols_matrix = len(np.transpose(trn_matrix))
 
-    trn_sin_ruido = trn_matrix[:, 0:cols_matrix]  # Sin el timestamp, 180 variables
+    trn_sin_ruido = trn_matrix[:, 0:cols_matrix]  # Sin el timestamp, 90 variables
     trn_sin_ruido_collected = trn_sin_ruido * 0
 
     for dat in range(cols_matrix):
@@ -99,7 +133,7 @@ def preprocesamiento(file_p, csv_headers):
     sin_ruido_df = pd.DataFrame(trn_sin_ruido_collected, columns=csv_col_list)
 
     trn_normalizado = normalizar(sin_ruido_df)
-    trn_normalizado['timestamp'] = tim_normalizado['timestamp']
+    trn_normalizado['timestamp'] = trn_tim_df
 
     return trn_normalizado
 
@@ -109,7 +143,7 @@ def moving_average(data, window_size):
     return np.convolve(data, window, 'same')
 
 
-def fpca(datos, file_nam, file_extension_name):
+def fpca(datos, file_nam):
     # data import
     data = datos.values
     amp = data[1:len(data), 1:91]
@@ -212,10 +246,10 @@ def fpca(datos, file_nam, file_extension_name):
 
         plt.savefig('pca/images/'+ file_nam +'_PCA.png')
     
-    pcaDataFrame = pd.DataFrame(pca_data2, columns=csv_col_list)
+    pcaDataFrame = pd.DataFrame(pca_data2, columns=csv_col_list[1:91])
 
-    if elementosTraining == "S":
-        pcaDataFrame.to_csv(r'' + 'pca' + '/pca_' + file_extension_name, index=False, header=True)
+    if elementosTraining == "S":        #Posteriormente se tiene que utilizar “/scripts_de_apoyo/AtribDomTiempo.py”
+        pcaDataFrame.to_csv(r'' + 'pca' + '/pca_' + file_nam + '.csv', index=False, header=True)
     
     return pcaDataFrame
 
@@ -285,23 +319,24 @@ elementosTraining = input("¿Desea Tratar los datos como training? S = SI, N = N
 guardarImagenes = input("¿Desea almacenar las imagenes de PCA? S = SI, N = NO: ")
 
 file_path = askopenfilenames(parent=root, title='Choose a file', initialdir='datos_crudos',
-                               filetypes=(("CSV Files", "*.csv"),))
+                               filetypes=(("DAT Files", "*.dat"),))
 
 # Se añaden los encabezados
 csv_headers = "csi_headers.csv"
-csv_cols = pd.read_csv(csv_headers)[1:91]
+csv_cols = pd.read_csv(csv_headers)[0:91]
 csv_col_list = csv_cols["Column_Names"].tolist()
 
 for i in range(len(file_path)):
     splitted = file_path[i].split("/")
     file_name = splitted[-1]
 
-    short_name = file_name.split(".csv")[-2]
+    short_name = file_name.split(".dat")[-2]
 
     print('Pruebas de : %s' % short_name)
 
-    datos_preprocesados = preprocesamiento(file_path[i], csv_headers)
-    datos_pca = fpca(datos_preprocesados, short_name, file_name)
+    datos_crudos = extracting_csi(file_path[i])
+    datos_preprocesados = preprocesamiento(datos_crudos, csv_col_list)
+    datos_pca = fpca(datos_preprocesados, short_name)
 
     if elementosTraining == "N":
         vector = AtribDomTiempo(datos_pca.iloc[:])
