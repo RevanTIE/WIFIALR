@@ -40,7 +40,7 @@ class DataBase:
         try:
             self.cursor.execute(sql)
             alerta = self.cursor.fetchone()
-            print("ALERTA: UNA PERSONA", alerta[0])
+            return "ALERTA: UNA PERSONA " + alerta[0]
             
         except Exception as e:
             raise

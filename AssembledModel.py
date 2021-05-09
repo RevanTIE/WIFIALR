@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from tkinter import Tk
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilenames
 from DataBaseConnection import DataBase
 from sklearn.neural_network import MLPClassifier
@@ -344,7 +345,9 @@ for i in range(len(file_path)):
 
         try:
             database = DataBase()
-            database.select_alertas(mov_predecido)
+            movimiento = database.select_alertas(mov_predecido)
+            print (movimiento)
+            messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)
             database.close()
 
         except Exception as e:
