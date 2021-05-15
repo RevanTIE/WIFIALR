@@ -291,7 +291,7 @@ def fclasificacion(pca_vector):
     """
     Neural Network
     """
-    neuNet = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
+    neuNet = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(10, 2), max_iter=5, random_state=1)
     y_pred_neuNet = neuNet.fit(X_train, y_train).predict(X_test)
     NeuralN_moda = stat.mode(y_pred_neuNet)
     NeuralN_mov = database.select_movimientos(NeuralN_moda)
