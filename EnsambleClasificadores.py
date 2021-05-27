@@ -13,12 +13,24 @@ from sklearn import svm
 Script para probar la tasa de reconocimiento de cada uno de los modelos de clasificación
 '''
 
-contador = [1, 2, 3, 4, 5, 6]
-X = pd.read_csv("trn_tst/X.csv", names=contador)
+"""
+    Preguntar si se desea Probar la tasa de reconocimiento de datos de training, o de datos nuevos nunca antes vistos
+"""
+tasa = input("¿Desea estimar la tasa de reconocimiento a partir de los mismos datos de training? S = SI, N = NO: ")
+nam = tuple(list(range(360)))
+X = pd.read_csv("trn_tst/X.csv", names = nam)
 Y_vector = pd.read_csv("trn_tst/Y.csv", names=[0])
-
 y = np.ravel(Y_vector)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+if tasa == "S":
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+
+else:
+    X_train = X
+    y_train = y
+    X_test = pd.read_csv("datos_nuevos/X_test.csv", names = nam)
+    y_test_prev = pd.read_csv("datos_nuevos/Y_test.csv", names = [0])
+    y_test = np.ravel(y_test_prev)
 
 print("TEST ACCURACY")
 
@@ -59,7 +71,7 @@ print('Quadratic Discriminant Analysis: %.2f de un total de %d' % (accuracy_qda,
 """
 Neural Network
 """
-neuNet = clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
+neuNet = clf = MLPClassifier(solver='sgd', alpha=0.0001, random_state=1)  ## alpha=1e-5 hidden_layer_sizes=(5, 2)
 y_pred_neuNet = neuNet.fit(X_train, y_train).predict(X_test)
 accuracy_neuNet= ((y_test == y_pred_neuNet).sum() / X_test.shape[0]) * 100
 print('Neural Network: %.2f de un total de %d' % (accuracy_neuNet, X_test.shape[0]))

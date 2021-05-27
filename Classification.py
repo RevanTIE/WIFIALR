@@ -40,8 +40,7 @@ n_neighbors = 7
 neigh = neighbors.KNeighborsClassifier(n_neighbors, weights='uniform')
 
 y_pred_neigh = neigh.fit(X_train, y_train).predict(X_test)
-KNN_moda = stat.mode(y_pred_neigh)
-KNN_mov = database.select_movimientos(KNN_moda)
+KNN_mov = database.select_movimientos(y_pred_neigh[0])
 
 print('Nearest Neighbors : %s' % (KNN_mov))
 """
@@ -49,29 +48,32 @@ Support Vector Machine
 """
 supVM = svm.SVC(kernel='linear', C=1)
 y_pred_supVM = supVM.fit(X_train, y_train).predict(X_test)
-SVM_moda = stat.mode(y_pred_supVM)
-SVM_mov = database.select_movimientos(SVM_moda)
+SVM_mov = database.select_movimientos(y_pred_supVM[0])
 
 print('Support Vector Machine : %s' % (SVM_mov))
 """
 Neural Network
 """
-neuNet = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
+neuNet = MLPClassifier(solver='sgd', alpha=0.0001, random_state=1) #solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1
 y_pred_neuNet = neuNet.fit(X_train, y_train).predict(X_test)
-NeuralN_moda = stat.mode(y_pred_neuNet)
-NeuralN_mov = database.select_movimientos(NeuralN_moda)
+NeuralN_mov = database.select_movimientos(y_pred_neuNet[0])
 
 print('Neural Network : %s' % (NeuralN_mov))
 
 database.close()
 
-vector_modas = [KNN_moda, SVM_moda, NeuralN_moda]
-mov_predecido =  stat.mode(vector_modas)
+try:
+    vector_modas = [y_pred_neigh[0], y_pred_supVM[0], y_pred_neuNet[0]]
+    mov_predecido = stat.mode(vector_modas)
+
+except Exception as e:
+    mov_predecido = y_pred_neigh[0]
 
 
 try:
    database = DataBase()
-   database.select_alertas(mov_predecido)
+   movimiento = database.select_alertas(mov_predecido)
+   print(movimiento)
    database.close()
             
 except Exception as e:

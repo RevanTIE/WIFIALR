@@ -13,7 +13,11 @@ from sklearn.neural_network import MLPClassifier
 from sklearn import neighbors
 from sklearn import svm
 import statistics as stat
+
 import tsfel
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from ClasesNumericas import ClasesNum
+from sklearn.naive_bayes import GaussianNB
 
 from CSIKit.reader import get_reader
 import Amplitude
@@ -144,14 +148,15 @@ def moving_average(data, window_size):
     return np.convolve(data, window, 'same')
 
 
-def fpca(datos, file_nam):
+def images(datos, file_nam):
+
     # data import
     data = datos.values
     amp = data[1:len(data), 1:91]
     # plt
 
     if guardarImagenes == "S":
-
+        ## Amplitud de las tres antenas
         fig = plt.figure(figsize=(18, 15))
         ax1 = plt.subplot(311)
         plt.imshow(amp[:, 0:29].T, interpolation="nearest", aspect="auto", cmap="jet")
@@ -173,86 +178,55 @@ def fpca(datos, file_nam):
         plt.ylabel("Subcarrier index")
         ax3.set_title("Antenna C")
         plt.colorbar()
-        plt.savefig('pca/images/' + file_nam + '_amplitude.png')
-    
-    # Initializing variables
-    constant_offset = np.empty_like(amp)
-    filtered_data = np.empty_like(amp)
+        plt.savefig('images/' + file_nam + '_amplitude.png')
 
-    # Calculating the constant offset (moving average 20 seconds)
-    for i in range(1, len(amp[0])):
-        constant_offset[:, i] = moving_average(amp[:, i], len(amp[0]))
+        ## 2 subcarriers de cada antena
 
-    # Calculating the filtered data (substract the constant offset)
-    filtered_data = amp - constant_offset
-
-    # Smoothing (moving average 0.01 seconds)
-    for i in range(1, len(amp[0])):
-        filtered_data[:, i] = moving_average(filtered_data[:, i], 10)
-    # Calculate correlation matrix (90 * 90 dim)
-    cov_mat2 = np.cov(filtered_data.T)
-    # Calculate eig_val & eig_vec
-    eig_val2, eig_vec2 = np.linalg.eig(cov_mat2)
-    # Sort the eig_val & eig_vec
-    idx = eig_val2.argsort()[::-1]
-    eig_val2 = eig_val2[idx]
-    eig_vec2 = eig_vec2[:, idx]
-    # Calculate H * eig_vec
-    pca_data2 = filtered_data.dot(eig_vec2)
-
-    if guardarImagenes == "S":
         fig3 = plt.figure(figsize=(18, 30))
 
         ax1 = plt.subplot(611)
-        plt.plot(pca_data2[:, 0])
+        plt.plot(amp[:, 0])
         plt.xlabel("Time[s]")
         plt.ylabel("Observation values")
         # plt.plot(pca_data2[2500:17500,0])
-        ax1.set_title("PCA 1st component")
+        ax1.set_title("Antenna A 1st subcarrier")
 
         ax2 = plt.subplot(612)
-        plt.plot(pca_data2[:, 1])
+        plt.plot(amp[:, 1])
         plt.xlabel("Time[s]")
         plt.ylabel("Observation values")
         # plt.plot(pca_data2[2500:17500,1])
-        ax2.set_title("PCA 2nd component")
+        ax2.set_title("Antenna A 2nd subcarrier")
 
         ax3 = plt.subplot(613)
-        plt.plot(pca_data2[:, 2])
+        plt.plot(amp[:, 30])
         plt.xlabel("Time[s]")
         plt.ylabel("Observation values")
         # plt.plot(pca_data2[2500:17500,2])
-        ax3.set_title("PCA 3rd component")
+        ax3.set_title("Antenna B 1st subcarrier")
 
         ax4 = plt.subplot(614)
-        plt.plot(pca_data2[:, 3])
+        plt.plot(amp[:, 31])
         plt.xlabel("Time[s]")
         plt.ylabel("Observation values")
         # plt.plot(pca_data2[2500:17500,3])
-        ax4.set_title("PCA 4th component")
+        ax4.set_title("Antenna B 2nd subcarrier")
 
         ax5 = plt.subplot(615)
-        plt.plot(pca_data2[:, 4])
+        plt.plot(amp[:, 60])
         plt.xlabel("Time[s]")
         plt.ylabel("Observation values")
         # plt.plot(pca_data2[2500:17500,4])
-        ax5.set_title("PCA 5th component")
+        ax5.set_title("Antenna C 1st subcarrier")
 
         ax6 = plt.subplot(616)
-        plt.plot(pca_data2[:, 5])
+        plt.plot(amp[:, 61])
         plt.xlabel("Time[s]")
         plt.ylabel("Observation values")
         # plt.plot(pca_data2[2500:17500,5])
-        ax6.set_title("PCA 6th component")
+        ax6.set_title("Antenna C 2nd subcarrier")
 
-        plt.savefig('pca/images/'+ file_nam +'_PCA.png')
-    
-    pcaDataFrame = pd.DataFrame(pca_data2, columns=csv_col_list[1:91])
-
-    if elementosTraining == "S":        #Posteriormente se tiene que utilizar “/scripts_de_apoyo/AtribDomTiempo.py”
-        pcaDataFrame.to_csv(r'' + 'pca' + '/pca_' + file_nam + '.csv', index=False, header=True)
-    
-    return pcaDataFrame
+        plt.savefig('images/'+ file_nam +'_subcarriers.png')
 
 
 def fclasificacion(pca_vector):
@@ -275,8 +249,7 @@ def fclasificacion(pca_vector):
     neigh = neighbors.KNeighborsClassifier(n_neighbors, weights='uniform')
 
     y_pred_neigh = neigh.fit(X_train, y_train).predict(X_test)
-    KNN_moda = stat.mode(y_pred_neigh)
-    KNN_mov = database.select_movimientos(KNN_moda)
+    KNN_mov = database.select_movimientos(y_pred_neigh[0])
 
     print('Nearest Neighbors : %s' % KNN_mov)
     """
@@ -284,24 +257,48 @@ def fclasificacion(pca_vector):
     """
     supVM = svm.SVC(kernel='linear', C=1)
     y_pred_supVM = supVM.fit(X_train, y_train).predict(X_test)
-    SVM_moda = stat.mode(y_pred_supVM)
-    SVM_mov = database.select_movimientos(SVM_moda)
+    SVM_mov = database.select_movimientos(y_pred_supVM[0])
 
     print('Support Vector Machine : %s' % SVM_mov)
+
+    """
+    Gaussian Naive Bayes
+    """
+    gnb = GaussianNB()
+    y_pred_gnb = gnb.fit(X_train, y_train).predict(X_test)
+    Gaussian_mov = database.select_movimientos(y_pred_gnb[0])
+
+    print('Gaussian Naive Bayes: %s' % Gaussian_mov)
+
+
     """
     Neural Network
     """
-    neuNet = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(10, 2), max_iter=5, random_state=1)
+    neuNet = MLPClassifier(solver='sgd', alpha=0.0001, random_state=1)
     y_pred_neuNet = neuNet.fit(X_train, y_train).predict(X_test)
-    NeuralN_moda = stat.mode(y_pred_neuNet)
-    NeuralN_mov = database.select_movimientos(NeuralN_moda)
+    NeuralN_mov = database.select_movimientos(y_pred_neuNet[0])
 
     print('Neural Network : %s' % NeuralN_mov)
+
+    """
+    Linear Discriminant Analysis
+    """
+    lda = LinearDiscriminantAnalysis()
+    y_pred_lda = lda.fit(X_train, y_train).predict(X_test)
+    lda_mov = database.select_movimientos(y_pred_lda[0])
+
+    print('Linear Discriminant Analysis: %s' % lda_mov)
     
     database.close()
 
-    vector_modas = [KNN_moda, SVM_moda, NeuralN_moda]
-    mov_predecido = stat.mode(vector_modas)
+    try:
+        vector_modas = [y_pred_neigh[0], y_pred_supVM[0], y_pred_neuNet[0], y_pred_lda[0], y_pred_gnb[0]]
+        mov_predecido = stat.mode(vector_modas)
+
+    except Exception as e:
+        mov_predecido = y_pred_supVM[0]
+
+
 
     return mov_predecido
 
@@ -311,13 +308,13 @@ root = Tk() #Elimina la ventana de Tkinter
 root.withdraw() #Ahora se cierra
 
 """
-    Preguntar si se desea tratar la lista como elementos de Trainig para generar matrices de PCA
+    Preguntar si se desea tratar la lista como elementos de Testing para generar matriz X y clases Y de pruebas
 """
-elementosTraining = input("¿Desea Tratar los datos como training? S = SI, N = NO: ")
+elementosTraining = input("¿Desea Tratar los datos como testing? S = SI, N = NO: ")
 """
-    Preguntar si se desea almacenar las imagenes en la carpeta en PCA
+    Preguntar si se desea almacenar las imagenes de las señales
 """
-guardarImagenes = input("¿Desea almacenar las imagenes de PCA? S = SI, N = NO: ")
+guardarImagenes = input("¿Desea almacenar las imagenes de las señales? S = SI, N = NO: ")
 
 file_path = askopenfilenames(parent=root, title='Choose a file', initialdir='datos_crudos',
                                filetypes=(("DAT Files", "*.dat"),))
@@ -327,7 +324,12 @@ csv_headers = "csi_headers.csv"
 csv_cols = pd.read_csv(csv_headers)[0:91]
 csv_col_list = csv_cols["Column_Names"].tolist()
 
-for i in range(len(file_path)):
+Y_testing = []
+file_len = len(file_path)
+nam = tuple(list(range(360)))
+X_testing = np.zeros([file_len, 360])
+
+for i in range(file_len):
     splitted = file_path[i].split("/")
     file_name = splitted[-1]
 
@@ -337,19 +339,34 @@ for i in range(len(file_path)):
 
     datos_crudos = extracting_csi(file_path[i])
     datos_preprocesados = preprocesamiento(datos_crudos, csv_col_list)
-    datos_pca = fpca(datos_preprocesados, short_name)
+    images(datos_preprocesados, short_name)
+    datos_sin_timestamp =  datos_preprocesados.drop(['timestamp'], axis=1)
+    
+    vector = AtribDomTiempo(datos_sin_timestamp.iloc[:])
+    
+    if elementosTraining == "S":
+        movimiento = short_name.split("_")[-4]
+        tipo_movimiento = ClasesNum(movimiento).val_int_clase
+        
+        Y_testing.append(tipo_movimiento)
+        X_testing[i, :] = vector.values
 
-    if elementosTraining == "N":
-        vector = AtribDomTiempo(datos_pca.iloc[:])
+    else:
         mov_predecido = fclasificacion(vector)
 
         try:
             database = DataBase()
             movimiento = database.select_alertas(mov_predecido)
             print (movimiento)
-            messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)
+            #messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)  ## Descomentar para pop up
             database.close()
 
         except Exception as e:
             raise
 
+if elementosTraining == "S":
+    X_testing_df = pd.DataFrame(X_testing)
+    Y_testing_df = pd.DataFrame(Y_testing)
+
+    X_testing_df.to_csv(r'' + 'datos_nuevos' + '/X_test.csv', index=False, header=False)
+    Y_testing_df.to_csv(r'' + 'datos_nuevos' + '/Y_test.csv', index=False, header=False)
