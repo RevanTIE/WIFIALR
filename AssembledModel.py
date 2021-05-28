@@ -14,6 +14,8 @@ from sklearn import neighbors
 from sklearn import svm
 import statistics as stat
 
+from scipy.signal import savgol_filter
+
 import tsfel
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from ClasesNumericas import ClasesNum
@@ -74,36 +76,15 @@ def normalizar(df):
 
 
 ##Función de eliminación de ruido (Por vector)
-def ruido(i):
-    mirror_i = np.transpose(i)
-    w = 3
-    ven = w
+def ruido(x):
+    ##   Savitzky-Golay params
+    # len(x)
+    window_length  = 249
+    polyorder = 5
+    
+    filtro = savgol_filter(x, window_length, polyorder, mode='nearest')
 
-    prev = mirror_i[0:ven - 1]
-    prev_mean = np.mean(prev)
-
-    modified_length = len(mirror_i) - 2
-    z_table = []
-
-    ##Para length del primer valor hasta el final del vector
-    for data in range(modified_length):
-        y = mirror_i
-        if ven <= len(mirror_i):
-            z = y[data:ven]
-            ven = ven + 1
-
-        acumulado = np.mean(z)
-        z_table.append(acumulado)
-
-    penultimo = mirror_i[-2]
-    ultimo = mirror_i[-1]
-    last = [penultimo, ultimo]
-    last_mean = np.mean(last)
-
-    z_table.insert(0, prev_mean)
-    z_table.append(last_mean)
-
-    return z_table
+    return filtro
 
 def preprocesamiento(file, csv_col_list):
     # Se añaden los encabezados
@@ -114,15 +95,8 @@ def preprocesamiento(file, csv_col_list):
     # Se convierte en dataframe
     trn_tim_df = pd.DataFrame(trn_tim)
 
-    # Imputación de datos
-    inf_estadistica_trn = trn.describe()  # Por lo tanto existen datos faltantes.
-
-    # Razones por las que faltan datos:
-    # 1. Se puede optimizar el procesa de extracción de los datos
-    # 2. Debido a la recolección de los datos
-
-    # Se pone nan como 0
-    trn_NaN_2_0 = trn.fillna(1.0000e-5)  # Se puede mejorar la imputación de datos empleando otra función.
+    # Using Interpolation for Missing Values 
+    trn_NaN_2_0 = trn.interpolate(method='polynomial', order=2) ## trn.fillna(1.0000e-5)
 
     # Eliminación de ruido
     trn_matrix = trn_NaN_2_0.values
@@ -137,7 +111,7 @@ def preprocesamiento(file, csv_col_list):
 
     sin_ruido_df = pd.DataFrame(trn_sin_ruido_collected, columns=csv_col_list)
 
-    trn_normalizado = normalizar(sin_ruido_df)
+    trn_normalizado = sin_ruido_df ## normalizar(sin_ruido_df)
     trn_normalizado['timestamp'] = trn_tim_df
 
     return trn_normalizado
@@ -329,6 +303,7 @@ file_len = len(file_path)
 nam = tuple(list(range(360)))
 X_testing = np.zeros([file_len, 360])
 
+
 for i in range(file_len):
     splitted = file_path[i].split("/")
     file_name = splitted[-1]
@@ -340,9 +315,9 @@ for i in range(file_len):
     datos_crudos = extracting_csi(file_path[i])
     datos_preprocesados = preprocesamiento(datos_crudos, csv_col_list)
     images(datos_preprocesados, short_name)
-    datos_sin_timestamp =  datos_preprocesados.drop(['timestamp'], axis=1)
+    ##datos_sin_timestamp =  datos_preprocesados.drop(['timestamp'], axis=1)  ## Descomentar
     
-    vector = AtribDomTiempo(datos_sin_timestamp.iloc[:])
+    ##vector = AtribDomTiempo(datos_sin_timestamp.iloc[:]) ## Descomentar
     
     if elementosTraining == "S":
         movimiento = short_name.split("_")[-4]
@@ -350,19 +325,20 @@ for i in range(file_len):
         
         Y_testing.append(tipo_movimiento)
         X_testing[i, :] = vector.values
+    
+    #else:
+    #    mov_predecido = fclasificacion(vector)
 
-    else:
-        mov_predecido = fclasificacion(vector)
+    #    try:
+    #        database = DataBase()
+    #        movimiento = database.select_alertas(mov_predecido)
+    #        print (movimiento)
+    #        #messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)  ## Descomentar para pop up
+    #        database.close()
 
-        try:
-            database = DataBase()
-            movimiento = database.select_alertas(mov_predecido)
-            print (movimiento)
-            #messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)  ## Descomentar para pop up
-            database.close()
-
-        except Exception as e:
-            raise
+    #    except Exception as e:
+    #        raise
+            
 
 if elementosTraining == "S":
     X_testing_df = pd.DataFrame(X_testing)
