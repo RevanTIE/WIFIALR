@@ -315,9 +315,9 @@ for i in range(file_len):
     datos_crudos = extracting_csi(file_path[i])
     datos_preprocesados = preprocesamiento(datos_crudos, csv_col_list)
     images(datos_preprocesados, short_name)
-    ##datos_sin_timestamp =  datos_preprocesados.drop(['timestamp'], axis=1)  ## Descomentar
+    datos_sin_timestamp =  datos_preprocesados.drop(['timestamp'], axis=1)  ## Descomentar
     
-    ##vector = AtribDomTiempo(datos_sin_timestamp.iloc[:]) ## Descomentar
+    vector = AtribDomTiempo(datos_sin_timestamp.iloc[:]) ## Descomentar
     
     if elementosTraining == "S":
         movimiento = short_name.split("_")[-4]
@@ -326,18 +326,18 @@ for i in range(file_len):
         Y_testing.append(tipo_movimiento)
         X_testing[i, :] = vector.values
     
-    #else:
-    #    mov_predecido = fclasificacion(vector)
+    else:
+        mov_predecido = fclasificacion(vector)
 
-    #    try:
-    #        database = DataBase()
-    #        movimiento = database.select_alertas(mov_predecido)
-    #        print (movimiento)
-    #        #messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)  ## Descomentar para pop up
-    #        database.close()
+        try:
+            database = DataBase()
+            movimiento = database.select_alertas(mov_predecido)
+            print (movimiento)
+            #messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)  ## Descomentar para pop up
+            database.close()
 
-    #    except Exception as e:
-    #        raise
+        except Exception as e:
+            raise
             
 
 if elementosTraining == "S":
