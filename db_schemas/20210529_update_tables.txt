@@ -1,0 +1,1 @@
+Este cambio aplica sólamente para la base de datos que está instalada en el NUC RX.

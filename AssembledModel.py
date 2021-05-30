@@ -15,6 +15,7 @@ from sklearn import svm
 import statistics as stat
 
 from scipy.signal import savgol_filter
+from sklearn.impute import KNNImputer
 
 import tsfel
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -95,11 +96,15 @@ def preprocesamiento(file, csv_col_list):
     # Se convierte en dataframe
     trn_tim_df = pd.DataFrame(trn_tim)
 
-    # Using Interpolation for Missing Values 
-    trn_NaN_2_0 = trn.interpolate(method='polynomial', order=2) ## trn.fillna(1.0000e-5)
+    # Imputación básica en base a estadísticos - Imputación por Knn
+    knn = KNNImputer(n_neighbors=5)
+    trn_matrix = knn.fit_transform(trn)
+    
+    ## simple = SimpleImputer().fit(trn)
+    ## trn_NaN_2_0 = simple.transform(trn) ## trn.fillna(1.0000e-5)
 
     # Eliminación de ruido
-    trn_matrix = trn_NaN_2_0.values
+    # trn_matrix = trn_NaN_2_0
     rows_matrix = len(trn_matrix)
     cols_matrix = len(np.transpose(trn_matrix))
 
