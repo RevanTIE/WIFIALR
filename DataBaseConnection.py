@@ -17,7 +17,7 @@ class DataBase:
                 )
         
         self.cursor = self.connection.cursor()
-        print("¡Conexión establecida exitosamente!")
+        print("A Connection was successfully established!")
     
     #Función de ejemplo
     def select_movimiento(self):
@@ -29,7 +29,7 @@ class DataBase:
             movimiento = self.cursor.fetchall()
             
             for mov in movimiento:
-                print("Id: ", mov[0], "Movimiento: ", mov[1])
+                print("Id: ", mov[0], "Activity: ", mov[1])
             
         except Exception as e:
             raise
@@ -40,7 +40,7 @@ class DataBase:
         try:
             self.cursor.execute(sql)
             alerta = self.cursor.fetchone()
-            return "ALERTA: UNA PERSONA " + alerta[0]
+            return "ALERT: A PERSON " + alerta[0]
             
         except Exception as e:
             raise

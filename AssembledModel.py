@@ -222,16 +222,6 @@ def fclasificacion(pca_vector):
     database = DataBase()
 
     """
-    Nearest Neighbors Classification
-    """
-    n_neighbors = 7
-    neigh = neighbors.KNeighborsClassifier(n_neighbors, weights='uniform')
-
-    y_pred_neigh = neigh.fit(X_train, y_train).predict(X_test)
-    KNN_mov = database.select_movimientos(y_pred_neigh[0])
-
-    print('Nearest Neighbors : %s' % KNN_mov)
-    """
     Support Vector Machine
     """
     supVM = svm.SVC(kernel='linear', C=1)
@@ -239,45 +229,10 @@ def fclasificacion(pca_vector):
     SVM_mov = database.select_movimientos(y_pred_supVM[0])
 
     print('Support Vector Machine : %s' % SVM_mov)
-
-    """
-    Gaussian Naive Bayes
-    """
-    gnb = GaussianNB()
-    y_pred_gnb = gnb.fit(X_train, y_train).predict(X_test)
-    Gaussian_mov = database.select_movimientos(y_pred_gnb[0])
-
-    print('Gaussian Naive Bayes: %s' % Gaussian_mov)
-
-
-    """
-    Neural Network
-    """
-    neuNet = MLPClassifier(solver='sgd', alpha=0.0001, random_state=1)
-    y_pred_neuNet = neuNet.fit(X_train, y_train).predict(X_test)
-    NeuralN_mov = database.select_movimientos(y_pred_neuNet[0])
-
-    print('Neural Network : %s' % NeuralN_mov)
-
-    """
-    Linear Discriminant Analysis
-    """
-    lda = LinearDiscriminantAnalysis()
-    y_pred_lda = lda.fit(X_train, y_train).predict(X_test)
-    lda_mov = database.select_movimientos(y_pred_lda[0])
-
-    print('Linear Discriminant Analysis: %s' % lda_mov)
     
     database.close()
 
-    try:
-        vector_modas = [y_pred_neigh[0], y_pred_supVM[0], y_pred_neuNet[0], y_pred_lda[0], y_pred_gnb[0]]
-        mov_predecido = stat.mode(vector_modas)
-
-    except Exception as e:
-        mov_predecido = y_pred_supVM[0]
-
-
+    mov_predecido = y_pred_supVM[0]
 
     return mov_predecido
 
@@ -338,7 +293,7 @@ for i in range(file_len):
             database = DataBase()
             movimiento = database.select_alertas(mov_predecido)
             print (movimiento)
-            #messagebox.showwarning("MOVIMIENTO DETECTADO", movimiento)  ## Descomentar para pop up
+            messagebox.showwarning("DETECTED ACTIVITY", movimiento)  ## Descomentar para pop up
             database.close()
 
         except Exception as e:
