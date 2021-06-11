@@ -1,11 +1,15 @@
 .ipynb_checkpoints/
 legacy/
-datos_crudos/
+datos_crudos/datos_lab
+datos_crudos/datos_nuevos
+datos_crudos/training
+datos_crudos/csv
+datos_crudos/dat testing
+datos_crudos/dat training
+datos_crudos/pruebas random
 datos_nuevos/otherData
 preprocesados/
-librerias/The-Real-Time/linux-80211n-csitool-supplementary
-librerias/The-Real-Time/CSI_Monitor.py
-librerias/The-Real-Time/read_bf_file_threads.py
-librerias/The-Real-Time/read_bf_socket.m
+pca/
+librerias/
 trn_tst/legacy
 __pycache__
