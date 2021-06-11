@@ -1,9 +1,8 @@
 .ipynb_checkpoints/
 legacy/
 datos_crudos/
-datos_nuevos/
+datos_nuevos/otherData
 preprocesados/
-pca/
 librerias/The-Real-Time/linux-80211n-csitool-supplementary
 librerias/The-Real-Time/CSI_Monitor.py
 librerias/The-Real-Time/read_bf_file_threads.py
