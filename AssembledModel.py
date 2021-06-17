@@ -40,14 +40,14 @@ def extracting_csi(file_path):
 
     timestamp_vector = csi_data.timestamps
 
-    csi_amp_matrix = np.zeros([csi_data.expected_frames, 90])
+    csi_amp_matrix = np.zeros([len(csi_matrix_inversa_1), 90])
     csi_amp_matrix[:, 0:30] = csi_matrix_inversa_1
     csi_amp_matrix[:, 30:60] = csi_matrix_inversa_2
     csi_amp_matrix[:, 60:90] = csi_matrix_inversa_3
 
     csi_amp_matrix[csi_amp_matrix == -inf] = np.nan
 
-    csvNewFile = np.zeros([csi_data.expected_frames, len(np.transpose(csi_amp_matrix)) + 1])
+    csvNewFile = np.zeros([len(csi_matrix_inversa_1), len(np.transpose(csi_amp_matrix)) + 1])
     time_v = np.ravel(timestamp_vector)
 
     csvNewFile = np.c_[time_v, csi_amp_matrix]
