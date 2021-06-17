@@ -55,7 +55,9 @@ EJECUTANDO "AssembledModel.py":
  * Si se teclea SI, los archivos .dat que se seleccionen mediante la interfaz de ventanas del software, serán procesados y convertidos en una nueva matriz de datos X y vector de clases Y, y serán almacenados en la carpeta "/datos_nuevos", como "X_test.csv" y "Y_test.csv". La funcionalidad de ambos archivos es ser pasados como parámetros al script "EnsambleClasificadores.py", junto con la matriz de training "/trn_tst/X.csv" y el vector de training /trn_tst/Y.csv, para estimar la tasa de reconocimiento de cada Modelo construido al momento, por cada algoritmo de Clasificación (ver punto del proceso anterior).
 NOTA: Esta opción puede ser utilizada para generar una nueva matriz de datos X y vector de clases Y para training, solo deben renombrarse y colocarse en la carpeta "/trn_tst".
 
-![Rx03](https://user-images.githubusercontent.com/41920284/122335289-df12f800-ceef-11eb-85c3-65a74033685c.png)
+<p align="center">
+  <img width="460" height="300" src="https://user-images.githubusercontent.com/41920284/122335289-df12f800-ceef-11eb-85c3-65a74033685c.png">
+</p>
 
  * Si se teclea NO, cada uno de los archivos .dat serán procesados y clasificados, y al final el software enviará dos mensajes de alerta sobre el tipo de movimiento detectado: Uno a través de Consola y otro a través de una ventana pop up.
 
