@@ -74,7 +74,7 @@ NOTA: Esta opción puede ser utilizada para generar una nueva matriz de datos X 
 </p>
 
 NOTA: Si se seleccionan varios archivos .dat a la vez, serán procesados uno por uno, y no todos a la vez.
-
+PAPER LINK: https://ieeexplore.ieee.org/document/9534823
 
 
 
